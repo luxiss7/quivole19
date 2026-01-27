@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 590d24782c18fbf40a889b550caa0366, type: 3}
+  m_Name: Voleur
+  m_EditorClassIdentifier: 
+  nomClasse: Voleur
+  pointsDeVie: 10
+  melee: 5
+  distance: 5
+  crochetage: 10
+  sprite: {fileID: 21300000, guid: ae0fd8ced650ebf4dad8205b7da56d1e, type: 3}
+  arme1:
+    nom: 
+    degats: 0
+    type: 0
+  arme2:
+    nom: 
+    degats: 0
+    type: 0

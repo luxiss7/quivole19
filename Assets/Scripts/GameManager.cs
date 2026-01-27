@@ -1,0 +1,89 @@
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class GameManager : MonoBehaviour
+{
+    public List<Player> joueurs; // Liste des joueurs dans la partie
+    public int tourActuel = 0;   // Quel joueur est actif
+    public bool classesChoisies = false; // nouvelle variable
+    public SmoothCameraFollow cameraPrincipale;
+    public GameObject classChoiceUI;   // Le GameObject qui contient ton interface de choix
+
+    void Start()
+    {
+        if (GameState.Instance != null && GameState.Instance.donjonGenere) return;
+        if (joueurs.Count == 0)
+        {
+            Debug.LogWarning("Aucun joueur n'est défini !");
+        }
+        else
+        {
+            // Attendre le choix de classe avant de commencer le premier tour
+            StartCoroutine(AttendreChoixClasse());
+        }
+    }
+
+    IEnumerator AttendreChoixClasse()
+    {
+        // Boucle tant que tous les joueurs n'ont pas choisi
+        while (!classesChoisies)
+        {
+            yield return null; // attendre 1 frame
+        }
+
+        // Une fois les classes choisies, on démarre le premier tour
+        DebutTour();
+    }
+
+
+    public void DebutTour()
+    {
+        Player joueurActif = joueurs[tourActuel];
+        PlayerMovement pm = joueurActif.GetComponent<PlayerMovement>();
+
+        pm.deplacementsRestants = 0;
+        pm.peutBouger = false;
+        pm.peutLancerDe = false; // on bloque
+
+        StartCoroutine(DelaiAvantAutoriserLancer(pm));
+        DeplacerCameraVersJoueur(tourActuel);
+
+        Debug.Log("Tour du joueur : " + joueurActif.classeData.nomClasse + " - Appuyer sur D pour lancé le dé");
+    }
+
+    void DeplacerCameraVersJoueur(int index)
+    {
+        Player joueurActif = joueurs[index];
+
+        if (cameraPrincipale != null)
+            cameraPrincipale.cible = joueurActif.transform;
+    }
+
+    // Passe au joueur suivant
+    public void TourSuivant()
+    {
+        tourActuel++;
+        if (tourActuel >= joueurs.Count)
+            tourActuel = 0;
+
+        DeplacerCameraVersJoueur(tourActuel);
+
+        Debug.Log("Tour du joueur : " + joueurs[tourActuel].classeData.nomClasse);
+    }
+
+    // Lancer de dé
+    public int LancerDe()
+    {
+        int resultat = Random.Range(1, 7); // 1 à 6
+        Debug.Log("Dé lancé : " + resultat);
+        return resultat;
+    }
+
+    IEnumerator DelaiAvantAutoriserLancer(PlayerMovement pm)
+    {
+        yield return new WaitForSeconds(0.2f); // anti-trigger
+        pm.peutLancerDe = true; // le joueur peut maintenant lancer son dé
+    }
+
+}
