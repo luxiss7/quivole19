@@ -1,70 +1,42 @@
 using UnityEngine;
-using System;
 using System.Collections.Generic;
 
 public class CombatManager : MonoBehaviour
 {
-    public enum CombatState { Start, PlayerTurn, EnemyTurn, Victory, Defeat }
+    public static CombatManager Instance;
+
+    public enum CombatState { PlayerTurn, EnemyTurn, Victory, Defeat }
     public CombatState state;
 
-    public List<PlayerCombatant> joueurs = new();
-    public EnemyCombatant ennemi;
+    public List<Player> joueurs = new();
+    public EnemyData enemyData;
+    public GameObject enemyGO; // ennemi dans le donjon
 
-    private int indexJoueur = 0;
-    private Action onCombatTermine;
+    int indexJoueur;
 
-    [Header("Combat Visuals")]
-    public GameObject playerPrefab;
-    public GameObject enemyPrefab;
-    public Transform[] playerSlots;
-    public Transform enemySlot;
-
-    // ----------------- Nouveau -----------------
-    public void StartCombat(Action finCombatCallback)
+    void Awake()
     {
-        onCombatTermine = finCombatCallback;
-
-        if (GameState.Instance == null ||
-            GameState.Instance.enemyData == null ||
-            GameState.Instance.party.Count == 0)
-        {
-            Debug.LogWarning("[CombatManager] Pas de données valides pour le combat !");
-            onCombatTermine?.Invoke();
-            return;
-        }
-
-        InitialiserCombat();
+        Instance = this;
     }
 
-    void InitialiserCombat()
+    // 🔥 LANCEMENT COMBAT
+    public void StartCombat(GameObject enemyGO, EnemyData data)
     {
+        this.enemyGO = enemyGO;
+        this.enemyData = data;
+
         joueurs.Clear();
-
-        foreach (var p in GameState.Instance.party)
-            joueurs.Add(new PlayerCombatant(p));
-
-        ennemi = new EnemyCombatant(GameState.Instance.enemyData);
-
-        SpawnVisuels();
-
-        state = CombatState.PlayerTurn;
         indexJoueur = 0;
 
-        Debug.Log("[CombatManager] Combat contre " + ennemi.data.nom);
-    }
+        joueurs.AddRange(FindObjectsOfType<Player>());
 
-    void SpawnVisuels()
-    {
-        // JOUEURS
-        for (int i = 0; i < joueurs.Count; i++)
-        {
-            GameObject go = Instantiate(playerPrefab, playerSlots[i].position, Quaternion.identity);
-            go.GetComponent<PlayerCombatView>().Init(joueurs[i]);
-        }
+        // Geler déplacements
+        foreach (var j in joueurs)
+            j.GetComponent<PlayerMovement>().peutBouger = false;
 
-        // ENNEMI
-        GameObject enemyGO = Instantiate(enemyPrefab, enemySlot.position, Quaternion.identity);
-        enemyGO.GetComponent<EnemyCombatView>().Init(ennemi);
+        state = CombatState.PlayerTurn;
+
+        Debug.Log("[Combat] Combat lancé contre " + enemyData.nom);
     }
 
     // ================= TOUR JOUEUR =================
@@ -72,27 +44,21 @@ public class CombatManager : MonoBehaviour
     {
         if (state != CombatState.PlayerTurn) return;
 
-        PlayerCombatant j = joueurs[indexJoueur];
+        Player j = joueurs[indexJoueur];
 
-        int degats = j.data.melee + j.data.arme1.degats;
-        ennemi.hpActuels -= degats;
+        int degats = j.melee + j.arme1.degats;
+        enemyData.pointsDeVie -= degats;
 
-        Debug.Log($"Joueur {indexJoueur} attaque : {degats}");
+        Debug.Log($"[Combat] {j.name} attaque : {degats}");
 
-        if (ennemi.hpActuels <= 0)
+        if (enemyData.pointsDeVie <= 0)
         {
             state = CombatState.Victory;
             FinCombat();
             return;
         }
 
-        ProchainJoueur();
-    }
-
-    void ProchainJoueur()
-    {
         indexJoueur++;
-
         if (indexJoueur >= joueurs.Count)
         {
             indexJoueur = 0;
@@ -106,40 +72,22 @@ public class CombatManager : MonoBehaviour
     {
         foreach (var j in joueurs)
         {
-            if (!j.estVivant) continue;
-
-            int degats = ennemi.data.degats;
-            j.hpActuels -= degats;
-
-            if (j.hpActuels <= 0)
-                j.estVivant = false;
+            j.pointsDeVie -= enemyData.degats;
+            Debug.Log("[Combat] Ennemi attaque");
         }
 
-        if (TousLesJoueursMorts())
-        {
-            state = CombatState.Defeat;
-            FinCombat();
-        }
-        else
-        {
-            state = CombatState.PlayerTurn;
-        }
+        state = CombatState.PlayerTurn;
     }
 
-    bool TousLesJoueursMorts()
-    {
-        foreach (var j in joueurs)
-            if (j.estVivant) return false;
-        return true;
-    }
-
+    // ================= FIN =================
     void FinCombat()
     {
-        Debug.Log("[CombatManager] Fin du combat : " + state);
+        foreach (var j in joueurs)
+            j.GetComponent<PlayerMovement>().peutBouger = true;
 
-        GameState.Instance.ClearCombatData();
+        if (state == CombatState.Victory && enemyGO != null)
+            Destroy(enemyGO);
 
-        // Callback pour restaurer les joueurs et reprendre la map
-        onCombatTermine?.Invoke();
+        Debug.Log("[Combat] Fin du combat : " + state);
     }
 }

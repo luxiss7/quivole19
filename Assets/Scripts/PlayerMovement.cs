@@ -40,6 +40,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        // Sauvegarde positions donjon en permanence
+        CombatZoneManager.Instance?.SauvegarderPositionsDonjon();
+
         // Seulement si c'est le joueur actif
         if (gameManager == null) return;
         if (gameManager.joueurs[gameManager.tourActuel] != GetComponent<Player>())
