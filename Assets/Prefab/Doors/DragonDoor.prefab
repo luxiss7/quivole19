@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: -1395534959
   m_SortingLayer: 1
   m_SortingOrder: 5
-  m_Sprite: {fileID: 21300000, guid: dba7789698a8957449ae9f7d448cc0a0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 2f24e1011fbe6eb408a769ad871dd02a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -115,7 +115,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -129,7 +129,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.0001, y: 0.0001}
+  m_Size: {x: 0.5, y: 0.5}
   m_EdgeRadius: 0
 --- !u!114 &7916942807747823714
 MonoBehaviour:
@@ -144,5 +144,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isOpen: 0
-  closedSprite: {fileID: 21300000, guid: dba7789698a8957449ae9f7d448cc0a0, type: 3}
-  openSprite: {fileID: 21300000, guid: 6c19716c93843df45b6ed8432f60b2e3, type: 3}
+  closedSprite: {fileID: 21300000, guid: 2f24e1011fbe6eb408a769ad871dd02a, type: 3}
+  openSprite: {fileID: 21300000, guid: e2a3c219a6de65748bf81e4dbd11e8a4, type: 3}

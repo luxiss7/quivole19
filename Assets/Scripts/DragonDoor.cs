@@ -9,25 +9,38 @@ public class DragonDoor : MonoBehaviour
     public Sprite openSprite;
 
     private SpriteRenderer sr;
-    private BoxCollider2D col;
 
     void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
-        col = GetComponent<BoxCollider2D>();
-        SetState(false);
     }
 
-    public void TryOpen(bool playerHasKey)
+    void Start()
     {
-        if (!playerHasKey) return;
-        SetState(true);
+        // état initial
+        UpdateState();
     }
 
-    void SetState(bool open)
+    void Update()
     {
-        isOpen = open;
-        sr.sprite = open ? openSprite : closedSprite;
-        col.isTrigger = open; // fermé = blocage, ouvert = traversable
+        // si la clé vient d’être récupérée, on ouvre
+        if (!isOpen && GameState.Instance.dragonKeyRecuperee)
+        {
+            Open();
+        }
+    }
+
+    void Open()
+    {
+        isOpen = true;
+        sr.sprite = openSprite;
+    }
+
+    void UpdateState()
+    {
+        if (GameState.Instance.dragonKeyRecuperee)
+            Open();
+        else
+            sr.sprite = closedSprite;
     }
 }

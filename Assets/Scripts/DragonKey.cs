@@ -6,11 +6,10 @@ public class DragonKey : MonoBehaviour
 {
     void OnTriggerEnter2D(Collider2D other)
     {
-        PlayerInventory inv = other.GetComponent<PlayerInventory>();
-        if (inv != null)
-        {
-            inv.hasDragonKey = true;
-            Destroy(gameObject);
-        }
+        // on vérifie juste que c’est un joueur
+        if (!other.GetComponent<Player>()) return;
+        GameState.Instance.dragonKeyRecuperee = true;
+
+        Destroy(gameObject);
     }
 }
