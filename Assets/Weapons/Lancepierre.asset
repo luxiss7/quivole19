@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f629fe866743f264282457e1b0858910, type: 3}
+  m_Name: Lancepierre
+  m_EditorClassIdentifier: 
+  nom: Lance-pierre
+  degats: 5
+  type: 1
+  sprite: {fileID: 21300000, guid: 1b29d1edb690b164d94766a17be51bc6, type: 3}
