@@ -1,83 +1,83 @@
 using UnityEngine;
 
+/// <summary>
+/// Déclenche un combat quand le joueur touche l'ennemi
+/// VERSION CORRIGÉE pour fonctionner avec CombatManager_ULTRA_FINAL
+/// </summary>
 public class EnemyTrigger : MonoBehaviour
 {
+    [Header("Configuration")]
     public EnemyData enemyData;
-
-    [Header("Positions combat")]
-    public Transform CombatPositionJoueur1;
-    public Transform CombatPositionJoueur2;
-    public Transform CombatPositionJoueur3;
-    public Transform CombatPositionJoueur4;
-
+    
     private bool combatDeclenche = false;
 
-    private Vector3[] donjonPositions = new Vector3[4];
-
-    private void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D other)
     {
-        if (combatDeclenche) return;
+        // Vérifier si c'est un joueur
+        Player player = other.GetComponent<Player>();
+        if (player == null)
+            return;
 
-        Player p = other.GetComponent<Player>();
-        if (p == null) return;
+        // Éviter de déclencher plusieurs fois
+        if (combatDeclenche)
+            return;
+
+        // Vérifier que l'EnemyData existe
+        if (enemyData == null)
+        {
+            Debug.LogError($"[EnemyTrigger] {gameObject.name} n'a pas d'EnemyData assigné !");
+            return;
+        }
 
         combatDeclenche = true;
 
-        // Sauvegarde positions donjon
-        Player[] joueurs = FindObjectsOfType<Player>();
-        for (int i = 0; i < Mathf.Min(4, joueurs.Length); i++)
-            donjonPositions[i] = joueurs[i].transform.position;
-
-        // Déplacement vers positions de combat
-        for (int i = 0; i < Mathf.Min(4, joueurs.Length); i++)
+        Debug.Log($"[EnemyTrigger] Collision avec {enemyData.nom} !");
+        
+        // ✅ OPTION 1 : Utiliser directement CombatManager (RECOMMANDÉ)
+        if (CombatManager.Instance != null)
         {
-            joueurs[i].GetComponent<PlayerMovement>().peutBouger = false;
-            joueurs[i].transform.position = GetCombatPosition(i);
+            CombatManager.Instance.StartCombat(gameObject, enemyData);
+        }
+        else
+        {
+            Debug.LogError("[EnemyTrigger] CombatManager.Instance n'existe pas !");
         }
 
-        // Préparer GameState pour le combat
-        GameState.Instance.joueurs.Clear();
-        GameState.Instance.party.Clear();
-
-        foreach (var j in joueurs)
+        // ✅ OPTION 2 : Utiliser CombatZoneManager (si vous voulez garder cette architecture)
+        // Décommentez ces lignes et commentez l'option 1 si vous préférez
+        /*
+        if (CombatZoneManager.Instance != null)
         {
-            PlayerData data = j.CreerPlayerData();
-            data.position = j.GetComponent<PlayerMovement>().position;
-            GameState.Instance.joueurs.Add(data);
-            GameState.Instance.party.Add(data);
+            CombatZoneManager.Instance.LancerCombat(gameObject, enemyData, () => {
+                // Callback quand le combat est fini (optionnel)
+                Debug.Log($"[EnemyTrigger] Combat contre {enemyData.nom} terminé");
+            });
         }
-
-        GameState.Instance.enemyData = enemyData;
-
-        // Lancer le combat dans la même scène
-        FindObjectOfType<CombatManager>()?.StartCombat(FinCombat);
+        else
+        {
+            Debug.LogError("[EnemyTrigger] CombatZoneManager.Instance n'existe pas !");
+        }
+        */
     }
 
-    Vector3 GetCombatPosition(int index)
+    // Réinitialiser si on veut retester (pour debug)
+    void OnTriggerExit2D(Collider2D other)
     {
-        switch (index)
+        Player player = other.GetComponent<Player>();
+        if (player != null && !CombatManager.Instance.combatEnCours)
         {
-            case 0: return CombatPositionJoueur1.position;
-            case 1: return CombatPositionJoueur2.position;
-            case 2: return CombatPositionJoueur3.position;
-            case 3: return CombatPositionJoueur4.position;
-            default: return CombatPositionJoueur1.position;
+            combatDeclenche = false;
         }
     }
 
-    void FinCombat()
+    // Pour visualiser la zone de détection dans l'éditeur
+    void OnDrawGizmosSelected()
     {
-        // Restaurer positions donjon
-        Player[] joueurs = FindObjectsOfType<Player>();
-        for (int i = 0; i < Mathf.Min(4, joueurs.Length); i++)
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null)
         {
-            joueurs[i].transform.position = donjonPositions[i];
-            joueurs[i].GetComponent<PlayerMovement>().peutBouger = true;
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(transform.position, col.bounds.size);
         }
-
-        // Nettoyage
-        combatDeclenche = false;
-
-        Debug.Log("[CombatTrigger] Fin du combat, joueurs restaurés");
     }
 }

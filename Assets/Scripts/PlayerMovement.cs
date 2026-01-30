@@ -40,6 +40,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        // Sauvegarde positions donjon en permanence
+        CombatZoneManager.Instance?.SauvegarderPositionsDonjon();
+
         // Seulement si c'est le joueur actif
         if (gameManager == null) return;
         if (gameManager.joueurs[gameManager.tourActuel] != GetComponent<Player>())
@@ -52,12 +55,45 @@ public class PlayerMovement : MonoBehaviour
         // Lancer de dé manuel
         if (peutLancerDe && Input.GetKeyDown(KeyCode.D))
         {
-            deplacementsRestants = gameManager.LancerDe();
-            peutLancerDe = false;
+            // ✅ NOUVEAU : Vérifier si le joueur est immobilisé (KO)
+            Player player = GetComponent<Player>();
+            
+            if (player != null && player.toursImmobilisation > 0)
+            {
+                // ✅ Le joueur est immobilisé → Dé automatique = 0
+                deplacementsRestants = 0;
+                peutLancerDe = false;
+                
+                Debug.Log($"[PlayerMovement] {name} est immobilisé ! Dé = 0");
+                
+                // ✅ Afficher le dé KO
+                if (DiceDisplay.Instance != null)
+                {
+                    DiceDisplay.Instance.AfficherDeKO(name);
+                }
+                
+                // ✅ Décrémenter l'immobilisation
+                player.DecrementerImmobilisation();
+                
+                // ✅ Passer au tour suivant immédiatement
+                StartCoroutine(PasserTourApresKO());
+            }
+            else
+            {
+                // ✅ Joueur normal → Lancer le dé normalement
+                deplacementsRestants = gameManager.LancerDe();
+                peutLancerDe = false;
 
-            Debug.Log("Dé obtenu : " + deplacementsRestants);
+                Debug.Log("Dé obtenu : " + deplacementsRestants);
+                
+                // ✅ Afficher le dé de déplacement
+                if (DiceDisplay.Instance != null)
+                {
+                    DiceDisplay.Instance.AfficherDeDeplacement(deplacementsRestants);
+                }
 
-            StartCoroutine(DelayAvantDeplacement());
+                StartCoroutine(DelayAvantDeplacement());
+            }
         }
 
         // Interaction (appuie sur E pour interagir / ouvrir porte)
@@ -97,11 +133,11 @@ public class PlayerMovement : MonoBehaviour
                             return;
                         }
 
-                        // Porte fermée + clé → on l’ouvre puis on avance
+                        // Porte fermée + clé → on l'ouvre puis on avance
                         door.TryOpen(true);
                     }
 
-                    // Si elle est ouverte (ou vient de s’ouvrir), on laisse passer
+                    // Si elle est ouverte (ou vient de s'ouvrir), on laisse passer
                 }
 
 
@@ -154,23 +190,11 @@ public class PlayerMovement : MonoBehaviour
         peutBouger = true;
     }
 
-    void OnEnable()
+    IEnumerator PasserTourApresKO()
     {
-        WeaponPickupUI.OnMenuFerme += OnWeaponMenuFerme;
-    }
-
-    void OnDisable()
-    {
-        WeaponPickupUI.OnMenuFerme -= OnWeaponMenuFerme;
-    }
-
-    void OnWeaponMenuFerme()
-    {
-        // Sécurité : seulement si c’est le joueur actif
-        if (gameManager.joueurs[gameManager.tourActuel] != GetComponent<Player>())
-            return;
-
-        StartCoroutine(DelayAvantDeplacement());
+        yield return new WaitForSeconds(2f); // Laisser le temps de voir le dé à 0
+        gameManager.TourSuivant();
+        gameManager.DebutTour();
     }
 
     // Interaction avec la case devant le joueur

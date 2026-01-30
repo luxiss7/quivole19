@@ -2,12 +2,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
+/// <summary>
+/// ContrÃ´le les boutons d'action du combat avec les touches Z/S/D
+/// VERSION COMPATIBLE avec CombatManager_SIMPLE
+/// </summary>
 public class CombatUIController : MonoBehaviour
 {
     public CombatManager combatManager;
 
     [Header("Boutons")]
-    public List<Button> boutons; // 0=Attack,1=Defense,2=Heal,3=Items
+    public List<Button> boutons; // 0=Attack, 1=Defense, 2=Heal
 
     private int indexSelection = 0;
 
@@ -25,15 +29,14 @@ public class CombatUIController : MonoBehaviour
         if (combatManager == null)
             return;
 
-        if (combatManager.state != CombatManager.CombatState.PlayerTurn)
-            return;
-
+        // Navigation avec Z/S
         if (Input.GetKeyDown(KeyCode.Z))
             DeplacerSelection(-1);
 
         if (Input.GetKeyDown(KeyCode.S))
             DeplacerSelection(1);
 
+        // Validation avec D
         if (Input.GetKeyDown(KeyCode.D))
             Valider();
     }
@@ -55,7 +58,8 @@ public class CombatUIController : MonoBehaviour
         for (int i = 0; i < boutons.Count; i++)
         {
             Image img = boutons[i].GetComponent<Image>();
-            img.color = (i == indexSelection) ? selectedColor : normalColor;
+            if (img != null)
+                img.color = (i == indexSelection) ? selectedColor : normalColor;
         }
     }
 
@@ -64,19 +68,15 @@ public class CombatUIController : MonoBehaviour
         switch (indexSelection)
         {
             case 0:
-                combatManager.PlayerAttack();
+                combatManager.BoutonAttaquer();
                 break;
 
             case 1:
-                Debug.Log("DEFENSE (à implémenter)");
+                combatManager.BoutonDefendre();
                 break;
 
             case 2:
-                Debug.Log("HEAL (à implémenter)");
-                break;
-
-            case 3:
-                Debug.Log("ITEMS (à implémenter)");
+                combatManager.BoutonSoigner();
                 break;
         }
     }
