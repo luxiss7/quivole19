@@ -48,6 +48,10 @@ public class PlayerMovement : MonoBehaviour
         if (gameManager.joueurs[gameManager.tourActuel] != GetComponent<Player>())
             return;
 
+        // Seulement si le menu de ramassage d'arme n'est pas ouvert
+        if (WeaponPickupUI.Instance != null && WeaponPickupUI.Instance.MenuEstOuvert)
+        return;
+
         // Lancer de dé manuel
         if (peutLancerDe && Input.GetKeyDown(KeyCode.D))
         {

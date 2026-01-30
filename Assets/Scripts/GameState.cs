@@ -15,6 +15,7 @@ public class GameState : MonoBehaviour
     [Header("Entités Donjon")]
     public bool entitesGenerees = false;
     public List<EntityData> ennemisDonjon = new();
+    public List<EntityData> armesDonjon = new();
     public Vector2Int positionCleDragon;
     public Vector2Int positionPorteDragon;
 
