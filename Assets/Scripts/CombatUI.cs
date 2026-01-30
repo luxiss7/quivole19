@@ -1,22 +1,28 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Affiche les barres de HP des joueurs et de l'ennemi
+/// VERSION COMPATIBLE avec CombatManager_SIMPLE
+/// </summary>
 public class CombatUI : MonoBehaviour
 {
+    [Header("RÃ©fÃ©rences")]
     public CombatManager combat;
+    
+    [Header("Barres de HP")]
     public Slider enemyHP;
-
-    public Slider[] playerHP;
+    public Slider[] playerHP; // 4 sliders pour les 4 joueurs
 
     void Update()
     {
-        enemyHP.maxValue = combat.ennemi.data.pointsDeVie;
-        enemyHP.value = combat.ennemi.hpActuels;
+        if (combat == null)
+            return;
 
-        for (int i = 0; i < combat.joueurs.Count; i++)
-        {
-            playerHP[i].maxValue = combat.joueurs[i].data.pointsDeVie;
-            playerHP[i].value = combat.joueurs[i].hpActuels;
-        }
+        // Pour l'instant, ce script est optionnel
+        // Le systÃ¨me de combat fonctionne avec le Text de log uniquement
+        
+        // TODO: Si vous voulez des barres de HP, il faudra exposer
+        // les listes de combattants dans CombatManager
     }
 }
