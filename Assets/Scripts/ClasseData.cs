@@ -15,6 +15,6 @@ public class ClasseData : ScriptableObject
     public Sprite sprite;
 
     [Header("Armes de départ")]
-    public Weapon arme1;
-    public Weapon arme2;
+    public WeaponData arme1;
+    public WeaponData arme2;
 }
