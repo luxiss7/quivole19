@@ -4,11 +4,23 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance;
     public List<Player> joueurs; // Liste des joueurs dans la partie
     public int tourActuel = 0;   // Quel joueur est actif
     public bool classesChoisies = false; // nouvelle variable
     public SmoothCameraFollow cameraPrincipale;
     public GameObject classChoiceUI;   // Le GameObject qui contient ton interface de choix
+    public bool weaponPickupAutorise = true;
+
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
 
     void Start()
     {
@@ -39,6 +51,9 @@ public class GameManager : MonoBehaviour
 
     public void DebutTour()
     {
+        // On autorise à nouveau le pickup au debut du tour
+        weaponPickupAutorise = true;
+
         Player joueurActif = joueurs[tourActuel];
         PlayerMovement pm = joueurActif.GetComponent<PlayerMovement>();
 

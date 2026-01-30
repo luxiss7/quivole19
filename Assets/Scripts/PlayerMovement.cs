@@ -45,6 +45,10 @@ public class PlayerMovement : MonoBehaviour
         if (gameManager.joueurs[gameManager.tourActuel] != GetComponent<Player>())
             return;
 
+        // Seulement si le menu de ramassage d'arme n'est pas ouvert
+        if (WeaponPickupUI.Instance != null && WeaponPickupUI.Instance.MenuEstOuvert)
+        return;
+
         // Lancer de dé manuel
         if (peutLancerDe && Input.GetKeyDown(KeyCode.D))
         {
@@ -148,6 +152,25 @@ public class PlayerMovement : MonoBehaviour
         peutBouger = false;
         yield return new WaitForSeconds(0.2f);  // Attendre 0.2 sec
         peutBouger = true;
+    }
+
+    void OnEnable()
+    {
+        WeaponPickupUI.OnMenuFerme += OnWeaponMenuFerme;
+    }
+
+    void OnDisable()
+    {
+        WeaponPickupUI.OnMenuFerme -= OnWeaponMenuFerme;
+    }
+
+    void OnWeaponMenuFerme()
+    {
+        // Sécurité : seulement si c’est le joueur actif
+        if (gameManager.joueurs[gameManager.tourActuel] != GetComponent<Player>())
+            return;
+
+        StartCoroutine(DelayAvantDeplacement());
     }
 
     // Interaction avec la case devant le joueur

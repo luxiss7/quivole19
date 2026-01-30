@@ -10,8 +10,8 @@ public class PlayerData
     public int distance;
     public int crochetage;
 
-    public Weapon arme1;
-    public Weapon arme2;
+    public WeaponData arme1;
+    public WeaponData arme2;
 
     public bool hasDragonKey;
     public Vector2Int position;
