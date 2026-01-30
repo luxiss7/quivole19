@@ -60,10 +60,6 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(DelayAvantDeplacement());
         }
 
-        // Interaction (appuie sur E pour interagir / ouvrir porte)
-        if (Input.GetKeyDown(KeyCode.E))
-            TryInteract();
-
         if (deplacementsRestants > 0 && peutBouger)
         {
             Vector2Int direction = Vector2Int.zero;
@@ -80,30 +76,13 @@ public class PlayerMovement : MonoBehaviour
 
                 Vector2Int nouvellePosition = position + direction;
 
-                // 1) Vérifier si une porte est devant
+                // 1) Vérifier porte devant
                 DragonDoor door = GetDoor(nouvellePosition);
-
-                if (door != null)
+                if (door != null && !door.isOpen)
                 {
-                    // Si la porte est fermée, on teste la clé
-                    if (!door.isOpen)
-                    {
-                        PlayerInventory inv = GetComponent<PlayerInventory>();
-                        bool hasKey = inv != null && inv.hasDragonKey;
-
-                        if (!hasKey)
-                        {
-                            // Porte fermée + pas de clé → on ne bouge pas
-                            return;
-                        }
-
-                        // Porte fermée + clé → on l’ouvre puis on avance
-                        door.TryOpen(true);
-                    }
-
-                    // Si elle est ouverte (ou vient de s’ouvrir), on laisse passer
+                    // 🚫 porte fermée = mur logique
+                    return;
                 }
-
 
                 // 2) Vérification des murs (éviter de traverser)
                 Case caseCible = GetCase(nouvellePosition);
@@ -172,41 +151,6 @@ public class PlayerMovement : MonoBehaviour
 
         StartCoroutine(DelayAvantDeplacement());
     }
-
-    // Interaction avec la case devant le joueur
-    void TryInteract()
-    {
-        // tileDevant en coordonnées grille
-        Vector2Int tileDevantGrid = position + inputDirection;
-
-        // calcule un point monde centré sur la tile devant
-        Vector2 pointMonde = new Vector2(tileDevantGrid.x + 0.5f, tileDevantGrid.y + 0.5f);
-
-        // overlap avec petit rayon pour attraper colliders trigger
-        Collider2D hit = Physics2D.OverlapPoint(pointMonde);
-        if (hit == null) return;
-
-        // Porte
-        DragonDoor door = hit.GetComponent<DragonDoor>();
-        if (door != null)
-        {
-            PlayerInventory inv = GetComponent<PlayerInventory>();
-            bool hasKey = (inv != null) && inv.hasDragonKey;
-            door.TryOpen(hasKey);
-            return;
-        }
-
-        // Clé / Item (si tu veux qu'on ramasse via interaction au lieu de trigger)
-        DragonKey key = hit.GetComponent<DragonKey>();
-        if (key != null)
-        {
-            PlayerInventory inv = GetComponent<PlayerInventory>();
-            if (inv != null) inv.hasDragonKey = true;
-            Destroy(key.gameObject);
-            return;
-        }
-    }
-
     public Vector2Int GetGridPosition()
     {
         return position;
