@@ -16,3 +16,4 @@ MonoBehaviour:
   degats: 6
   type: 0
   sprite: {fileID: 21300000, guid: 35bdf76b491f6c2428c112d7a3e8bf86, type: 3}
+  prefab: {fileID: 1687416452602145090, guid: 184cc61ed11b5af48b04181ba9b34590, type: 3}

@@ -18,6 +18,7 @@ public class GameState : MonoBehaviour
     public List<EntityData> armesDonjon = new();
     public Vector2Int positionCleDragon;
     public Vector2Int positionPorteDragon;
+    public bool dragonKeyRecuperee = false;
 
     [Header("Combat")]
     public List<PlayerData> party = new();

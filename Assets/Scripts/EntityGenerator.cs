@@ -168,13 +168,12 @@ public class EntityGenerator : MonoBehaviour
             {
                 if (grille[x, y].type != Case.CaseType.Chemin)
                     continue;
+                // Exclure les salles spéciales
+                if (salleSpawn.Contains(new Vector2Int(x, y))) continue;
+                if (salleOeuf.Contains(new Vector2Int(x, y))) continue;
+                if (salleDragon.Contains(new Vector2Int(x, y))) continue;
 
                 Vector2Int p = new Vector2Int(x, y);
-
-                // Exclure les salles spéciales
-                if (salleSpawn.Contains(p)) continue;
-                if (salleOeuf.Contains(p)) continue;
-                if (salleDragon.Contains(p)) continue;
 
                 positionsValides.Add(p);
             }
@@ -222,13 +221,12 @@ public class EntityGenerator : MonoBehaviour
             {
                 if (grille[x, y].type != Case.CaseType.Chemin)
                     continue;
+                // Exclure les salles spéciales
+                if (salleSpawn.Contains(new Vector2Int(x, y))) continue;
+                if (salleOeuf.Contains(new Vector2Int(x, y))) continue;
+                if (salleDragon.Contains(new Vector2Int(x, y))) continue;
 
                 Vector2Int p = new Vector2Int(x, y);
-
-                // Exclure les salles spéciales
-                if (salleSpawn.Contains(p)) continue;
-                if (salleOeuf.Contains(p)) continue;
-                if (salleDragon.Contains(p)) continue;
 
                 positionsValides.Add(p);
             }
