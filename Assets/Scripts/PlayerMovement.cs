@@ -119,7 +119,7 @@ public class PlayerMovement : MonoBehaviour
                     // 🚫 porte fermée = mur logique
                     return;
                     // Si la porte est fermée, on teste la clé
-                    if (!door.isOpen)
+                    /*if (!door.isOpen)
                     {
                         PlayerInventory inv = GetComponent<PlayerInventory>();
                         bool hasKey = inv != null && inv.hasDragonKey;
@@ -132,7 +132,7 @@ public class PlayerMovement : MonoBehaviour
 
                         // Porte fermée + clé → on l'ouvre puis on avance
                         door.TryOpen(true);
-                    }
+                    }*/
 
                     // Si elle est ouverte (ou vient de s'ouvrir), on laisse passer
                 }
