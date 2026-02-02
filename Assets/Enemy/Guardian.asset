@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nom: Gardien
   pointsDeVie: 250
-  attaque: 10
+  degats: 10
   sprite: {fileID: 0}

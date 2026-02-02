@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nom: Triton
   pointsDeVie: 30
-  attaque: 6
-  sprite: {fileID: 0}
+  degats: 6
+  sprite: {fileID: 21300000, guid: 0ee26299111c741449909709ef25e562, type: 3}

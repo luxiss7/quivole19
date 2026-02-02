@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nom: Minotaure
   pointsDeVie: 60
-  attaque: 8
-  sprite: {fileID: 0}
+  degats: 8
+  sprite: {fileID: 21300000, guid: 4018522ecc78e0140868df5232191fd7, type: 3}

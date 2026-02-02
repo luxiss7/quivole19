@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nom: Mimique
   pointsDeVie: 25
-  attaque: 5
+  degats: 5
   sprite: {fileID: 0}
