@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 2386839042151584712}
   - component: {fileID: 7445557469507468956}
   - component: {fileID: -8237208710281759129}
-  - component: {fileID: -603977549258165774}
   m_Layer: 0
   m_Name: Bat
   m_TagString: Untagged
@@ -94,10 +93,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyData: {fileID: 11400000, guid: f16cf5506581636448a9d4c6da08bd3e, type: 2}
-  CombatPositionJoueur1: {fileID: 0}
-  CombatPositionJoueur2: {fileID: 0}
-  CombatPositionJoueur3: {fileID: 0}
-  CombatPositionJoueur4: {fileID: 0}
 --- !u!212 &7445557469507468956
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -177,16 +172,3 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &-603977549258165774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6885704252390341601}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a78cd544f2a970741bcbcff7c1691fab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spriteRenderer: {fileID: 0}

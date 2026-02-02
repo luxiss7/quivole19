@@ -52,6 +52,9 @@ public class PlayerMovement : MonoBehaviour
         if (WeaponPickupUI.Instance != null && WeaponPickupUI.Instance.MenuEstOuvert)
         return;
 
+        if (CombatManager.Instance.combatEnCours == true)
+        return;
+
         // Lancer de dé manuel
         if (peutLancerDe && Input.GetKeyDown(KeyCode.D))
         {
@@ -112,29 +115,12 @@ public class PlayerMovement : MonoBehaviour
 
                 Vector2Int nouvellePosition = position + direction;
 
-                // 1) Vérifier porte devant
+                // 1) Vérifier porte fermée devant
                 DragonDoor door = GetDoor(nouvellePosition);
                 if (door != null && !door.isOpen)
                 {
                     // 🚫 porte fermée = mur logique
                     return;
-                    // Si la porte est fermée, on teste la clé
-                    /*if (!door.isOpen)
-                    {
-                        PlayerInventory inv = GetComponent<PlayerInventory>();
-                        bool hasKey = inv != null && inv.hasDragonKey;
-
-                        if (!hasKey)
-                        {
-                            // Porte fermée + pas de clé → on ne bouge pas
-                            return;
-                        }
-
-                        // Porte fermée + clé → on l'ouvre puis on avance
-                        door.TryOpen(true);
-                    }*/
-
-                    // Si elle est ouverte (ou vient de s'ouvrir), on laisse passer
                 }
 
                 // 2) Vérification des murs (éviter de traverser)

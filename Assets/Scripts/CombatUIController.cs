@@ -29,8 +29,8 @@ public class CombatUIController : MonoBehaviour
         if (combatManager == null)
             return;
 
-        // Navigation avec Z/S
-        if (Input.GetKeyDown(KeyCode.Z))
+        // Navigation avec W/S
+        if (Input.GetKeyDown(KeyCode.W))
             DeplacerSelection(-1);
 
         if (Input.GetKeyDown(KeyCode.S))

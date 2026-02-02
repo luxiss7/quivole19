@@ -66,6 +66,12 @@ public class CombatManager : MonoBehaviour
     // ═══════════════════════════════════════════════════════════
     // DÉMARRAGE DU COMBAT
     // ═══════════════════════════════════════════════════════════
+
+    public Transform GetCameraTarget()
+    {
+        return enemyPosition;
+    }
+
     public void StartCombat(GameObject enemyGO, EnemyData enemyData)
     {
         if (combatEnCours)
@@ -180,6 +186,10 @@ public class CombatManager : MonoBehaviour
         // Activer UI
         if (combatUI != null)
             combatUI.SetActive(true);
+
+        // Mettre à jour caméra
+        if (GameManager.Instance != null)
+            GameManager.Instance.MettreAJourCamera();
 
         // Premier tour
         indexJoueur = 0;
@@ -737,6 +747,10 @@ public class CombatManager : MonoBehaviour
 
         if (combatUI != null)
             combatUI.SetActive(false);
+
+        // Mettre à jour caméra
+        if (GameManager.Instance != null)
+            GameManager.Instance.MettreAJourCamera();
         
         // Nettoyer
         joueurs.Clear();

@@ -929,7 +929,7 @@ Transform:
   m_GameObject: {fileID: 307368701}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 48, y: -2, z: 1}
+  m_LocalPosition: {x: 48, y: -1, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2411,7 +2411,7 @@ Transform:
   m_GameObject: {fileID: 913287912}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 48, y: 0, z: 1}
+  m_LocalPosition: {x: 48, y: 1, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2452,7 +2452,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -100}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 200, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &942481938
 MonoBehaviour:
@@ -2487,7 +2487,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: "R\xE9sultat"
 --- !u!222 &942481939
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2506,6 +2506,7 @@ GameObject:
   m_Component:
   - component: {fileID: 967557650}
   - component: {fileID: 967557649}
+  - component: {fileID: 967557651}
   m_Layer: 0
   m_Name: DonjonGenerator
   m_TagString: Untagged
@@ -2527,10 +2528,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   largeur: 36
   hauteur: 36
-  sallesMin: 6
-  sallesMax: 12
+  sallesMin: 2
+  sallesMax: 5
   tailleSalleMin: {x: 2, y: 2}
-  tailleSalleMax: {x: 4, y: 4}
+  tailleSalleMax: {x: 3, y: 3}
   offset: {x: -36, y: -18}
   caseManager: {fileID: 1655388238}
   tilemap: {fileID: 1457178349}
@@ -2553,6 +2554,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &967557651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 967557648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5621b461762c2b94c8efabe2fd267fd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  largeur: 36
+  hauteur: 36
+  tailleZone: 8
+  offset: {x: -18, y: -18}
+  caseManager: {fileID: 1655388238}
+  tilemap: {fileID: 1723491912}
+  murRuleTile: {fileID: 11400000, guid: 4b1e389aae53b204591374328a3b5e2a, type: 2}
+  solTile: {fileID: 11400000, guid: b46fef4f79b3ed04eb10313b0daf44d8, type: 2}
 --- !u!1 &977330553
 GameObject:
   m_ObjectHideFlags: 0
@@ -2941,10 +2962,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1945009007}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 125}
-  m_SizeDelta: {x: 500, y: 250}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -200, y: 200}
+  m_SizeDelta: {x: 250, y: 250}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1049328310
 MonoBehaviour:
@@ -3092,7 +3113,7 @@ Transform:
   m_GameObject: {fileID: 1064816143}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 48, y: -4, z: 1}
+  m_LocalPosition: {x: 48, y: -3, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3230,6 +3251,7 @@ GameObject:
   - component: {fileID: 1325192692}
   - component: {fileID: 1325192693}
   - component: {fileID: 1325192694}
+  - component: {fileID: 1325192695}
   m_Layer: 0
   m_Name: CombatManager
   m_TagString: Untagged
@@ -3291,6 +3313,25 @@ MonoBehaviour:
   - {fileID: 913287913}
   - {fileID: 307368702}
   - {fileID: 1064816144}
+--- !u!114 &1325192695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1325192690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 964704af52da87047b9e87fc8bdac18f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  combatManager: {fileID: 1325192693}
+  boutons:
+  - {fileID: 743990941}
+  - {fileID: 707716937}
+  - {fileID: 211322378}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  selectedColor: {r: 1, g: 0.120874554, b: 0.015686274, a: 1}
 --- !u!1 &1353628959
 GameObject:
   m_ObjectHideFlags: 0
@@ -12069,7 +12110,7 @@ Transform:
   m_GameObject: {fileID: 1711007963}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 48, y: 2, z: 1}
+  m_LocalPosition: {x: 48, y: 3, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

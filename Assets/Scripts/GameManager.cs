@@ -62,9 +62,27 @@ public class GameManager : MonoBehaviour
         pm.peutLancerDe = false; // on bloque
 
         StartCoroutine(DelaiAvantAutoriserLancer(pm));
-        DeplacerCameraVersJoueur(tourActuel);
+        MettreAJourCamera();
 
         Debug.Log("Tour du joueur : " + joueurActif.classeData.nomClasse + " - Appuyer sur D pour lancé le dé");
+    }
+
+    public void MettreAJourCamera()
+    {
+        if (cameraPrincipale == null) return;
+
+        // Si un combat est en cours → caméra sur l'ennemi
+        if (CombatManager.Instance != null && CombatManager.Instance.combatEnCours)
+        {
+            Transform cibleCombat = CombatManager.Instance.GetCameraTarget();
+            if (cibleCombat != null)
+                cameraPrincipale.cible = cibleCombat;
+        }
+        else
+        {
+            // Sinon → caméra sur le joueur actif
+            DeplacerCameraVersJoueur(tourActuel);
+        }
     }
 
     void DeplacerCameraVersJoueur(int index)
@@ -82,8 +100,7 @@ public class GameManager : MonoBehaviour
         if (tourActuel >= joueurs.Count)
             tourActuel = 0;
 
-        DeplacerCameraVersJoueur(tourActuel);
-
+        MettreAJourCamera();
         Debug.Log("Tour du joueur : " + joueurs[tourActuel].classeData.nomClasse);
     }
 

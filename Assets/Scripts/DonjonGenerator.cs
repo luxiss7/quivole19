@@ -57,6 +57,22 @@ public class DonjonGenerator : MonoBehaviour
     // ==========================================================
     void GenererDonjon()
     {
+        bool valide = false;
+        int essais = 0;
+
+        while (!valide && essais < 20)
+        {
+            essais++;
+            GenererDonjonInterne();
+            valide = OeufAccessibleAvantDragon();
+        }
+
+        if (!valide)
+            Debug.LogError("Donjon invalide après plusieurs tentatives");
+    }
+
+    void GenererDonjonInterne()
+    {
         grille = new Case[largeur, hauteur];
         salles.Clear();
 
@@ -66,7 +82,7 @@ public class DonjonGenerator : MonoBehaviour
                 grille[x, y] = new Case(new Vector2Int(x, y), Case.CaseType.Mur);
 
         // 2) Salles fixes
-        salleSpawn  = new RectInt(0, hauteur / 2 - 3, 4, 4);
+        salleSpawn  = new RectInt(2, hauteur / 2 - 3, 4, 4);
         salleOeuf   = new RectInt(largeur - 10, hauteur - 10, 8, 8);
         salleDragon = new RectInt(largeur - 10, 2, 8, 8);
 
@@ -78,23 +94,17 @@ public class DonjonGenerator : MonoBehaviour
         RemplirSalle(salleOeuf);
         RemplirSalle(salleDragon);
 
-        // 3) Génération salles aléatoires
+        // 3) Salles aléatoires
         int nbSalles = Random.Range(sallesMin, sallesMax + 1);
         for (int i = 0; i < nbSalles; i++)
             GenererSalleAleatoire();
 
-        // 4) Relier salles (sauf dragon) avec MST
+        // 4) Connexions
         RelierSalles();
-
-        // Relié dragon à UNE seule salle aléatoire
         RelierDragon();
 
-        // 5) Construction du caseManager + spawn
-        ExporterCases();
-
-        // 6) Nettoyage + dessin
+        // 5) Nettoyage
         NettoyerMursIsoles();
-        DessinerTilemap();
     }
 
     void SauvegarderDonjon()
@@ -159,11 +169,56 @@ public class DonjonGenerator : MonoBehaviour
         }
     }
 
+    // ★ NOUVEAU : gestion rayon spécial
+    bool EstSalleSpeciale(RectInt s)
+    {
+        return RectIdentique(s, salleSpawn)
+            || RectIdentique(s, salleOeuf)
+            || RectIdentique(s, salleDragon);
+    }
+
+    bool RectIdentique(RectInt a, RectInt b)
+    {
+        return a.xMin == b.xMin &&
+            a.yMin == b.yMin &&
+            a.width == b.width &&
+            a.height == b.height;
+    }
+
+    public static bool RectContainsInclusive(RectInt r, Vector2Int pos)
+    {
+        return pos.x >= r.xMin && pos.x <= r.xMin + r.width - 1 &&
+            pos.y >= r.yMin && pos.y <= r.yMin + r.height - 1;
+    }
+
+    public bool EstCaseDansSalleSpeciale(Vector2Int pos)
+    {
+        // 1) Bordures du donjon (marge 1 case)
+        if (pos.x <= 1 || pos.y <= 1 || pos.x >= largeur - 2 || pos.y >= hauteur - 2)
+            return true;
+
+        // 2) Salles fixes (avec bord inclusif)
+        if (RectContainsInclusive(salleSpawn, pos) ||
+            RectContainsInclusive(salleOeuf, pos) ||
+            RectContainsInclusive(salleDragon, pos))
+            return true;
+
+        return false;
+    }
+
     bool SalleValide(RectInt salle)
     {
         foreach (var s in salles)
         {
-            RectInt zone = new RectInt(s.xMin - 4, s.yMin - 4, s.width + 4, s.height + 4);
+            int rayon = EstSalleSpeciale(s) ? 4 : 1;
+
+            RectInt zone = new RectInt(
+                s.xMin - rayon,
+                s.yMin - rayon,
+                s.width + rayon * 2,
+                s.height + rayon * 2
+            );
+
             if (zone.Overlaps(salle))
                 return false;
         }
@@ -182,9 +237,9 @@ public class DonjonGenerator : MonoBehaviour
     // ==========================================================
     void RelierSalles()
     {
-        // Prim : relie chaque salle à la plus proche non reliée
         List<RectInt> nonRelie = new List<RectInt>(salles);
-        nonRelie.Remove(salleDragon); // dragon isolé
+        nonRelie.Remove(salleOeuf);
+        nonRelie.Remove(salleDragon);
 
         List<RectInt> arbre = new List<RectInt> { nonRelie[0] };
         nonRelie.RemoveAt(0);
@@ -200,64 +255,114 @@ public class DonjonGenerator : MonoBehaviour
                 float d = Vector2Int.Distance(Centre(sA), Centre(sB));
                 if (d < bestDist)
                 {
-                    A = sA; B = sB; bestDist = d;
+                    A = sA;
+                    B = sB;
+                    bestDist = d;
                 }
             }
 
             CreerCouloir(Centre(A), Centre(B), false);
-            arbre.Add(B); 
+            arbre.Add(B);
             nonRelie.Remove(B);
         }
     }
 
+    // ★ NOUVEAU : entrée dragon côté gauche
+    Vector2Int EntreeGauche(RectInt salle)
+    {
+        return new Vector2Int(salle.xMin - 1, salle.yMin + salle.height / 2);
+    }
+
     void RelierDragon()
     {
-        // On crée une liste des salles "candidates"
-        // → pas la salle dragon elle-même
-        // → uniquement les salles déjà reliées entre elles
+        // Liste des salles candidates (hors Dragon)
         List<RectInt> candidates = new List<RectInt>(salles);
-        candidates.Remove(salleDragon);
-
-        // Choisit UNE salle au hasard
+        candidates.RemoveAll(s => RectIdentique(s, salleDragon));
         RectInt cible = candidates[Random.Range(0, candidates.Count)];
 
-        // Trace 1 couloir → c’est le seul vers la salle Dragon
-        CreerCouloir(Centre(salleDragon), Centre(cible), true);
+        Vector2Int entreeDragon = EntreeGauche(salleDragon);
+
+        // ===== SEGMENT 1 : avancer 4 cases à gauche depuis l'entrée =====
+        Vector2Int pointSortie = entreeDragon;
+        for (int i = 0; i < 4; i++)
+        {
+            if (pointSortie.x <= 0) break; // sécurité bord gauche
+            grille[pointSortie.x, pointSortie.y].type = Case.CaseType.Chemin;
+            pointSortie.x -= 1;
+        }
+
+        // ===== SEGMENT 2 : créer un sas isolé autour du bout du couloir =====
+        // On s'assure qu'il reste dans la grille
+        int sasWidth = Mathf.Min(2, pointSortie.x + 1);
+        int sasHeight = Mathf.Min(2, hauteur - pointSortie.y);
+        RectInt sasDragon = new RectInt(pointSortie.x - sasWidth + 1, pointSortie.y, sasWidth, sasHeight);
+
+        // On remplit le sas
+        for (int x = sasDragon.xMin; x <= sasDragon.xMax; x++)
+            for (int y = sasDragon.yMin; y <= sasDragon.yMax; y++)
+                grille[x, y].type = Case.CaseType.Chemin;
+
+        // Ajouter le sas à la liste des salles pour que les autres couloirs puissent s’y connecter
+        salles.Add(sasDragon);
+
+        // ===== SEGMENT 3 : créer un couloir depuis la cible jusqu'au sas =====
+        CreerCouloir(Centre(cible), Centre(sasDragon), true);
     }
 
-    Vector2Int Centre(RectInt s) =>
-        new Vector2Int(s.xMin + s.width / 2, s.yMin + s.height / 2);
-
-    bool EstZoneInterditePourCouloir(int x, int y)
+    void RelierOeuf()
     {
-        // On élargit la zone d'un tile pour éviter les touches accidentelles
-        RectInt interdit = new RectInt(
-            salleDragon.xMin - 3,
-            salleDragon.yMin - 3,
-            salleDragon.width + 3,
-            salleDragon.height + 3
-        );
+        // Liste des salles candidates (hors Oeuf)
+        List<RectInt> candidates = new List<RectInt>(salles);
+        candidates.RemoveAll(s => RectIdentique(s, salleOeuf));
+        RectInt cible = candidates[Random.Range(0, candidates.Count)];
 
-        return interdit.Contains(new Vector2Int(x, y));
+        Vector2Int entreeOeuf = EntreeGauche(salleOeuf);
+
+        // ===== SEGMENT 1 : avancer 4 cases à gauche depuis l'entrée =====
+        Vector2Int pointSortie = entreeOeuf;
+        for (int i = 0; i < 4; i++)
+        {
+            if (pointSortie.x <= 0) break; // sécurité bord gauche
+            grille[pointSortie.x, pointSortie.y].type = Case.CaseType.Chemin;
+            pointSortie.x -= 1;
+        }
+
+        // ===== SEGMENT 2 : créer un sas isolé autour du bout du couloir =====
+        // On s'assure qu'il reste dans la grille
+        int sasWidth = Mathf.Min(2, pointSortie.x + 1);
+        int sasHeight = Mathf.Min(2, hauteur - pointSortie.y);
+        RectInt sasOeuf = new RectInt(pointSortie.x - sasWidth + 1, pointSortie.y, sasWidth, sasHeight);
+
+        // On remplit le sas
+        for (int x = sasOeuf.xMin; x <= sasOeuf.xMax; x++)
+            for (int y = sasOeuf.yMin; y <= sasOeuf.yMax; y++)
+                grille[x, y].type = Case.CaseType.Chemin;
+
+        // Ajouter le sas à la liste des salles pour que les autres couloirs puissent s’y connecter
+        salles.Add(sasOeuf);
+        // ===== SEGMENT 3 : créer un couloir depuis la cible jusqu'au sas =====
+        CreerCouloir(Centre(cible), Centre(sasOeuf), true);
     }
-    void CreerCouloir(Vector2Int a, Vector2Int b, bool forcer = false)
+
+    Vector2Int Centre(RectInt s)
+    {
+        return new Vector2Int(s.xMin + s.width / 2, s.yMin + s.height / 2);
+    }
+
+    void CreerCouloir(Vector2Int a, Vector2Int b, bool forcer)
     {
         int x = a.x;
         int y = a.y;
 
         while (x != b.x)
         {
-            if (forcer || !EstZoneInterditePourCouloir(x, y))
-                grille[x, y].type = Case.CaseType.Chemin;
-
+            grille[x, y].type = Case.CaseType.Chemin;
             x += (b.x > x) ? 1 : -1;
         }
 
         while (y != b.y)
         {
-            if (forcer || !EstZoneInterditePourCouloir(x, y))
-                grille[x, y].type = Case.CaseType.Chemin;
-
+            grille[x, y].type = Case.CaseType.Chemin;
             y += (b.y > y) ? 1 : -1;
         }
     }
@@ -284,6 +389,41 @@ public class DonjonGenerator : MonoBehaviour
         for (int x = salleSpawn.xMin; x <= salleSpawn.xMax; x++)
             for (int y = salleSpawn.yMin; y <= salleSpawn.yMax; y++)
                 positionsSpawn.Add(new Vector2Int(x, y) + offset);
+    }
+
+    // ==========================================================
+    // ----------------  ACCESSIBILITÉ DE L’ŒUF  -----------------
+    // ==========================================================
+    bool OeufAccessibleAvantDragon()
+    {
+        Queue<Vector2Int> file = new Queue<Vector2Int>();
+        HashSet<Vector2Int> visite = new HashSet<Vector2Int>();
+
+        Vector2Int start = Centre(salleSpawn);
+        file.Enqueue(start);
+
+        while (file.Count > 0)
+        {
+            Vector2Int p = file.Dequeue();
+            if (!visite.Add(p)) continue;
+
+            if (salleOeuf.Contains(p)) return true;
+            if (salleDragon.Contains(p)) continue;
+
+            foreach (Vector2Int v in new Vector2Int[]
+            {
+                p + Vector2Int.up,
+                p + Vector2Int.down,
+                p + Vector2Int.left,
+                p + Vector2Int.right
+            })
+            {
+                if (v.x >= 0 && v.x < largeur && v.y >= 0 && v.y < hauteur)
+                    if (grille[v.x, v.y].type == Case.CaseType.Chemin)
+                        file.Enqueue(v);
+            }
+        }
+        return false;
     }
 
     // ==========================================================
@@ -326,35 +466,6 @@ public class DonjonGenerator : MonoBehaviour
             }
             else tilemap.SetTile(pos, solTile);
         }
-    }
-
-    // ==========================================================
-    // ----------------  ACCESSIBILITÉ DE L’ŒUF  -----------------
-    // ==========================================================
-    bool OeufAccessibleAvantDragon()
-    {
-        Queue<Vector2Int> file = new Queue<Vector2Int>();
-        HashSet<Vector2Int> visite = new HashSet<Vector2Int>();
-
-        Vector2Int start = Centre(salleSpawn);
-        file.Enqueue(start);
-
-        while (file.Count > 0)
-        {
-            Vector2Int p = file.Dequeue();
-            if (!visite.Add(p)) continue;
-
-            if (salleOeuf.Contains(p)) return true;
-            if (salleDragon.Contains(p)) continue;
-
-            foreach (var v in new Vector2Int[] { p + Vector2Int.up, p + Vector2Int.down, p + Vector2Int.left, p + Vector2Int.right })
-            {
-                if (v.x >= 0 && v.x < largeur && v.y >= 0 && v.y < hauteur)
-                    if (grille[v.x, v.y].type == Case.CaseType.Chemin)
-                        file.Enqueue(v);
-            }
-        }
-        return false;
     }
 
     // ==========================================================
