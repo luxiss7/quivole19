@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Dragon
   m_EditorClassIdentifier: 
   nom: Dragon
-  pointsDeVie: 400
-  attaque: 15
+  pointsDeVie: 20
+  degats: 15
   sprite: {fileID: 21300000, guid: 4081506a401848242ada89e017701692, type: 3}

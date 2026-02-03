@@ -9,6 +9,7 @@ public class EntityGenerator : MonoBehaviour
     [Header("Objets")]
     public GameObject dragonDoorPrefab;
     public GameObject dragonKeyPrefab;
+    public GameObject DragonEggPrefab;
 
     public List<GameObject> weaponPrefabs;
 
@@ -64,6 +65,9 @@ public class EntityGenerator : MonoBehaviour
         // Clé
         Vector2Int posCle = TrouverCleDragon();
         GameState.Instance.positionCleDragon = posCle;
+
+        // Oeuf
+        Instantiate(DragonEggPrefab, Monde(Centre(salleOeuf)), Quaternion.identity);
 
         // Ennemis fixes
         AjouterEnnemi(dragonPrefab, Centre(salleDragon));

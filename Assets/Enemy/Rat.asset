@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nom: "Rat g\xE9ant"
   pointsDeVie: 15
-  attaque: 3
-  sprite: {fileID: 0}
+  degats: 3
+  sprite: {fileID: 21300000, guid: 5ae3ed2cb7abb5840b9da9d8a62f2fb9, type: 3}

@@ -92,7 +92,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4b626041c6afa14ca1314cf693391ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyData: {fileID: 0}
+  enemyData: {fileID: 11400000, guid: 6a9e82776402e4d46beb9cd649291b28, type: 2}
 --- !u!212 &-7618311994390880298
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -134,7 +134,7 @@ SpriteRenderer:
   m_SortingLayerID: 909246179
   m_SortingLayer: 2
   m_SortingOrder: 5
-  m_Sprite: {fileID: 21300000, guid: 3e5d04c318ba4af43857b140d078da28, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0ee26299111c741449909709ef25e562, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

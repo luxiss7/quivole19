@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nom: Garde archer
   pointsDeVie: 50
-  attaque: 7
+  degats: 7
   sprite: {fileID: 0}

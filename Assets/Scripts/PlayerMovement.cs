@@ -157,7 +157,6 @@ public class PlayerMovement : MonoBehaviour
 
                 else
                 {
-                    // Si on marche contre un mur, on garde la direction pour TryInteract (ex: porte)
                     inputDirection = direction;
                 }
             }

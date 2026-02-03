@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Pourfendeuse
   m_EditorClassIdentifier: 
   nom: Pourfendeuse de dragon
-  degats: 25
+  degats: 35
   type: 0
   sprite: {fileID: 21300000, guid: 0d460debcb6393b4588337d376f0694f, type: 3}
   prefab: {fileID: 1687416452602145090, guid: 56800cbcb561bbd4d9a8de3e1b6f0d2b, type: 3}
