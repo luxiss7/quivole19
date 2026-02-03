@@ -27444,12 +27444,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 1714875159718522929, guid: 2e6f5176a15526641921049270dac2e2, type: 3}
+      propertyPath: diceScanUI
+      value: 
+      objectReference: {fileID: 512295745}
+    - target: {fileID: 1714875159718522929, guid: 2e6f5176a15526641921049270dac2e2, type: 3}
+      propertyPath: diceScanText
+      value: 
+      objectReference: {fileID: 942481938}
+    - target: {fileID: 1714875159718522929, guid: 2e6f5176a15526641921049270dac2e2, type: 3}
       propertyPath: classChoiceUI
       value: 
       objectReference: {fileID: 96157661}
     - target: {fileID: 1714875159718522929, guid: 2e6f5176a15526641921049270dac2e2, type: 3}
       propertyPath: WeaponChoiceUI
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1714875159718522929, guid: 2e6f5176a15526641921049270dac2e2, type: 3}
+      propertyPath: diceScanMessage
+      value: "Lancez le d\xE9..."
       objectReference: {fileID: 0}
     - target: {fileID: 1714875159718522929, guid: 2e6f5176a15526641921049270dac2e2, type: 3}
       propertyPath: cameraPrincipale

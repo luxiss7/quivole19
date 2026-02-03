@@ -127,7 +127,7 @@ public class ClasseSelectionManager : MonoBehaviour
 
         ClasseData detected = null;
 
-        switch (roleKey)
+        switch (role.ToLower())
         {
             case "voleur":
                 detected = classes.Find(c => string.Equals(c.nomClasse, "Voleur", StringComparison.OrdinalIgnoreCase));

@@ -335,7 +335,8 @@ public class CombatManager : MonoBehaviour
         Log($"{joueur.data.classeData.nomClasse} attaque !");
         yield return new WaitForSeconds(0.5f);
         
-        int de = LancerDe();
+        int de = 0;
+        yield return StartCoroutine(GameManager.Instance.RequestColorRollCoroutine(r => de = r));
         Log($"Dé lancé : {de}");
         
         // ✅ Afficher le dé d'attaque
@@ -412,7 +413,8 @@ public class CombatManager : MonoBehaviour
         Log($"{joueur.data.classeData.nomClasse} se met en défense !");
         yield return new WaitForSeconds(0.5f);
         
-        int de = LancerDe();
+        int de = 0;
+        yield return StartCoroutine(GameManager.Instance.RequestColorRollCoroutine(r => de = r));
         Log($"Dé de défense : {de}");
         
         // ✅ Afficher le dé de défense
@@ -486,7 +488,8 @@ public class CombatManager : MonoBehaviour
         Log($"{joueur.data.classeData.nomClasse} tente de se soigner...");
         yield return new WaitForSeconds(0.5f);
         
-        int de = LancerDe();
+        int de = 0;
+        yield return StartCoroutine(GameManager.Instance.RequestColorRollCoroutine(r => de = r));
         Log($"Dé de soin : {de}");
         
         // ✅ Afficher le dé de soin
@@ -587,7 +590,8 @@ public class CombatManager : MonoBehaviour
         Log($"Cible : {cible.data.classeData.nomClasse}");
         yield return new WaitForSeconds(0.5f);
         
-        int de = LancerDe();
+        int de = 0;
+        yield return StartCoroutine(GameManager.Instance.RequestColorRollCoroutine(r => de = r));
         Log($"Dé ennemi : {de}");
         
         // ✅ Afficher le dé ennemi

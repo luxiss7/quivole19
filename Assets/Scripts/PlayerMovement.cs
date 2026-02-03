@@ -93,19 +93,22 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
-                // ✅ Joueur normal → Lancer le dé normalement
-                deplacementsRestants = gameManager.LancerDe();
+                // ✅ Joueur normal → Lancer le dé via dé couleur (asynchrone)
                 peutLancerDe = false;
 
-                Debug.Log("Dé obtenu : " + deplacementsRestants);
-                
-                // ✅ Afficher le dé de déplacement
-                if (DiceDisplay.Instance != null)
-                {
-                    DiceDisplay.Instance.AfficherDeDeplacement(deplacementsRestants);
-                }
+                StartCoroutine(gameManager.RequestColorRollCoroutine(result => {
+                    deplacementsRestants = result;
 
-                StartCoroutine(DelayAvantDeplacement());
+                    Debug.Log("Dé obtenu (via couleur) : " + deplacementsRestants);
+
+                    // ✅ Afficher le dé de déplacement
+                    if (DiceDisplay.Instance != null)
+                    {
+                        DiceDisplay.Instance.AfficherDeDeplacement(deplacementsRestants);
+                    }
+
+                    StartCoroutine(DelayAvantDeplacement());
+                }));
             }
         }
 
@@ -209,17 +212,20 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            deplacementsRestants = gameManager.LancerDe();
+            // Lancer via dé couleur (asynchrone)
             peutLancerDe = false;
+            StartCoroutine(gameManager.RequestColorRollCoroutine(result => {
+                deplacementsRestants = result;
 
-            Debug.Log("Dé obtenu : " + deplacementsRestants);
-            
-            if (DiceDisplay.Instance != null)
-            {
-                DiceDisplay.Instance.AfficherDeDeplacement(deplacementsRestants);
-            }
+                Debug.Log("Dé obtenu (via couleur) : " + deplacementsRestants);
 
-            StartCoroutine(DelayAvantDeplacement());
+                if (DiceDisplay.Instance != null)
+                {
+                    DiceDisplay.Instance.AfficherDeDeplacement(deplacementsRestants);
+                }
+
+                StartCoroutine(DelayAvantDeplacement());
+            }));
         }
     }
 
