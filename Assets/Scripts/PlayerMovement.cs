@@ -93,22 +93,20 @@ public class PlayerMovement : MonoBehaviour
             }
             else
             {
+                // ✅ Joueur normal → Lancer le dé normalement
+                deplacementsRestants = gameManager.LancerDe();
                 // ✅ Joueur normal → Lancer le dé via dé couleur (asynchrone)
                 peutLancerDe = false;
 
-                StartCoroutine(gameManager.RequestColorRollCoroutine(result => {
-                    deplacementsRestants = result;
+                Debug.Log("Dé obtenu : " + deplacementsRestants);
 
-                    Debug.Log("Dé obtenu (via couleur) : " + deplacementsRestants);
+                // ✅ Afficher le dé de déplacement
+                if (DiceDisplay.Instance != null)
+                {
+                    DiceDisplay.Instance.AfficherDeDeplacement(deplacementsRestants);
+                }
 
-                    // ✅ Afficher le dé de déplacement
-                    if (DiceDisplay.Instance != null)
-                    {
-                        DiceDisplay.Instance.AfficherDeDeplacement(deplacementsRestants);
-                    }
-
-                    StartCoroutine(DelayAvantDeplacement());
-                }));
+                StartCoroutine(DelayAvantDeplacement());
             }
         }
 
