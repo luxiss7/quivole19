@@ -24,6 +24,16 @@ public class CombatUIController : MonoBehaviour
         MettreAJourSelection();
     }
 
+    void OnEnable()
+    {
+        RFIDEventManager.OnRFIDDetected += OnRFIDDetected;
+    }
+
+    void OnDisable()
+    {
+        RFIDEventManager.OnRFIDDetected -= OnRFIDDetected;
+    }
+
     void Update()
     {
         if (combatManager == null)
@@ -39,6 +49,32 @@ public class CombatUIController : MonoBehaviour
         // Validation avec D
         if (Input.GetKeyDown(KeyCode.D))
             Valider();
+    }
+
+    void OnRFIDDetected(int lecteur, string role)
+    {
+        if (combatManager == null || !combatManager.combatEnCours)
+            return;
+
+        switch (lecteur)
+        {
+            case 1:
+                // Capteur 1 = W (monter)
+                DeplacerSelection(-1);
+                break;
+            case 3:
+                // Capteur 3 = S (descendre)
+                DeplacerSelection(1);
+                break;
+            case 2:
+            case 4:
+                // Capteur 2 ou 4 = D (valider)
+                Valider();
+                break;
+            default:
+                Debug.LogWarning("Lecteur RFID inconnu : " + lecteur);
+                break;
+        }
     }
 
     void DeplacerSelection(int direction)

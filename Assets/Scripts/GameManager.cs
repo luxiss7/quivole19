@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -11,6 +12,11 @@ public class GameManager : MonoBehaviour
     public SmoothCameraFollow cameraPrincipale;
     public GameObject classChoiceUI;   // Le GameObject qui contient ton interface de choix
     public bool weaponPickupAutorise = true;
+
+    [Header("Dice Scan UI")]
+    public GameObject diceScanUI;       // UI à activer pendant l'attente du roll couleur
+    public Text diceScanText;           // Texte à afficher (optionnel)
+    public string diceScanMessage = "Lancez le dé..."; // Message par défaut
 
     void Awake()
     {
@@ -34,7 +40,13 @@ public class GameManager : MonoBehaviour
             // Attendre le choix de classe avant de commencer le premier tour
             StartCoroutine(AttendreChoixClasse());
         }
+
+        // Ensure dice scan UI hidden at start
+        if (diceScanUI != null)
+            diceScanUI.SetActive(false);
     }
+
+
 
     IEnumerator AttendreChoixClasse()
     {
@@ -104,12 +116,11 @@ public class GameManager : MonoBehaviour
         Debug.Log("Tour du joueur : " + joueurs[tourActuel].classeData.nomClasse);
     }
 
-    // Lancer de dé
+    // Lancer de dé (fallback random, utilisé si jamais nécessaire)
     public int LancerDe()
     {
         int resultat = Random.Range(1, 7); // 1 à 6
-        // int resultat = Random.Range(10, 70); // test
-        Debug.Log("Dé lancé : " + resultat);
+        Debug.Log("Dé lancé (fallback random): " + resultat);
         return resultat;
     }
 
@@ -117,6 +128,42 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f); // anti-trigger
         pm.peutLancerDe = true; // le joueur peut maintenant lancer son dé
+    }
+
+    // Demande asynchrone d'un roll via dé couleur (pas de timeout - attend indéfiniment)
+    // onResult reçoit la valeur 1..6 quand l'événement couleur est détecté.
+    public IEnumerator RequestColorRollCoroutine(System.Action<int> onResult)
+    {
+        int? result = null;
+
+        void Handler(string color, int value)
+        {
+            // On accepte la valeur telle quelle, en s'assurant qu'elle est entre 1 et 6
+            result = Mathf.Clamp(value, 1, 6);
+        }
+
+        // Afficher l'UI d'attente si présente
+        if (diceScanUI != null)
+        {
+            diceScanUI.SetActive(true);
+            if (diceScanText != null)
+                diceScanText.text = diceScanMessage;
+        }
+
+        ColorEventManager.OnColorDetected += Handler;
+
+        // Attendre l'événement (sans timeout, comme demandé)
+        while (result == null)
+            yield return null;
+
+        // Se désabonner puis appeler le callback
+        ColorEventManager.OnColorDetected -= Handler;
+
+        // Masquer l'UI d'attente
+        if (diceScanUI != null)
+            diceScanUI.SetActive(false);
+
+        onResult?.Invoke(result.Value);
     }
 
 }
