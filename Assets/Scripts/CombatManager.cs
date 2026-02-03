@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using System.Linq;
 
 /// <summary>
@@ -668,6 +669,13 @@ public class CombatManager : MonoBehaviour
         if (ennemyGameObject != null)
             Destroy(ennemyGameObject);
         
+        if (ennemi.data.nom == "Dragon")
+        {
+            Log("Félicitations ! Vous avez vaincu le Dragon et terminé le jeu !");
+            SceneManager.LoadScene("KillerCredits");
+            return;
+        }
+
         StartCoroutine(RetourDonjon(2f));
     }
 
@@ -682,7 +690,7 @@ public class CombatManager : MonoBehaviour
         if (combatUI != null)
             combatUI.SetActive(false);
         
-        StartCoroutine(RetourDonjon(3f));
+        SceneManager.LoadScene("GameOver");
     }
 
     IEnumerator RetourDonjon(float delai)
@@ -766,6 +774,22 @@ public class CombatManager : MonoBehaviour
             logText.text = "";
         
         Debug.Log("[Combat] === SYSTÈME RÉINITIALISÉ ===");
+
+        // Si le joueur actif du GameManager est KO alors on saute son tour
+        if (GameManager.Instance != null)
+        {
+            Player joueurActif = GameManager.Instance.joueurs[GameManager.Instance.tourActuel];
+
+            if (joueurActif.estKO)
+            {
+                Debug.Log("Joueur KO : on saute son tour automatiquement");
+
+                yield return new WaitForSeconds(0.5f);
+
+                GameManager.Instance.TourSuivant();
+                GameManager.Instance.DebutTour();
+            }
+        }
     }
 
     int LancerDe()

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Lanceboule
   m_EditorClassIdentifier: 
   nom: Lance-boule de feu
-  degats: 25
+  degats: 35
   type: 1
   sprite: {fileID: 21300000, guid: d3ee179807e209f40b776aee96ccb04b, type: 3}
   prefab: {fileID: 1687416452602145090, guid: f13e006a4fda6c042a911bb21d3df156, type: 3}
