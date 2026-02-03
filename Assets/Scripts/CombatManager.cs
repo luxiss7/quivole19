@@ -774,6 +774,22 @@ public class CombatManager : MonoBehaviour
             logText.text = "";
         
         Debug.Log("[Combat] === SYSTÈME RÉINITIALISÉ ===");
+
+        // Si le joueur actif du GameManager est KO alors on saute son tour
+        if (GameManager.Instance != null)
+        {
+            Player joueurActif = GameManager.Instance.joueurs[GameManager.Instance.tourActuel];
+
+            if (joueurActif.estKO)
+            {
+                Debug.Log("Joueur KO : on saute son tour automatiquement");
+
+                yield return new WaitForSeconds(0.5f);
+
+                GameManager.Instance.TourSuivant();
+                GameManager.Instance.DebutTour();
+            }
+        }
     }
 
     int LancerDe()

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7713454397966308997}
   - component: {fileID: 7716137796849641998}
   - component: {fileID: 3285079460669771633}
-  - component: {fileID: 8224327140875387652}
+  - component: {fileID: -299121913416721829}
   m_Layer: 0
   m_Name: DragonEgg
   m_TagString: Untagged
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayerID: -1395534959
   m_SortingLayer: 1
   m_SortingOrder: 5
-  m_Sprite: {fileID: 21300000, guid: 04b7219a13175df4b865da7e89c003ac, type: 3}
+  m_Sprite: {fileID: 21300000, guid: d09849e8d67b1e34f87ec308de06efe0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -131,7 +131,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.5, y: 0.5}
   m_EdgeRadius: 0
---- !u!114 &8224327140875387652
+--- !u!114 &-299121913416721829
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,6 +140,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 7994132512509658743}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cefc4e78403b9ec4c9f6916ccf295bf5, type: 3}
+  m_Script: {fileID: 11500000, guid: 570292554aad9304fab56a7fddbb4d46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
