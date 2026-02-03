@@ -24,6 +24,16 @@ public class WeaponPickupUI : MonoBehaviour
         Instance = this;
     }
 
+    void OnEnable()
+    {
+        RFIDEventManager.OnRFIDDetected += OnRFIDDetected;
+    }
+
+    void OnDisable()
+    {
+        RFIDEventManager.OnRFIDDetected -= OnRFIDDetected;
+    }
+
     void Update()
     {
         if (!menuActif) return;
@@ -34,6 +44,28 @@ public class WeaponPickupUI : MonoBehaviour
             ChoisirSlot2();
         if (Input.GetKeyDown(KeyCode.W))
             Refuser();
+    }
+
+    void OnRFIDDetected(int lecteur, string role)
+    {
+        if (!menuActif) return;
+
+        switch (lecteur)
+        {
+            case 1: // Reader 1 = Refuse
+                Refuser();
+                break;
+            case 2: // Reader 2 = Slot 1
+                ChoisirSlot1();
+                break;
+            case 3:
+            case 4: // Reader 4 = Slot 2
+                ChoisirSlot2();
+                break;
+            default:
+                Debug.LogWarning("Lecteur RFID inconnu : " + lecteur);
+                break;
+        }
     }
 
     public void OuvrirMenu(Player p, WeaponTrigger arme)

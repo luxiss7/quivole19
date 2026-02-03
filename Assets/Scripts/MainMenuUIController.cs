@@ -27,6 +27,16 @@ public class MainMenuUIController : MonoBehaviour
         MettreAJourSelection();
     }
 
+    void OnEnable()
+    {
+        RFIDEventManager.OnRFIDDetected += OnRFIDDetected;
+    }
+
+    void OnDisable()
+    {
+        RFIDEventManager.OnRFIDDetected -= OnRFIDDetected;
+    }
+
     void Update()
     {
         if (!mainMenuPanel.activeSelf)
@@ -40,6 +50,32 @@ public class MainMenuUIController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.D))
             Valider();
+    }
+
+    void OnRFIDDetected(int lecteur, string role)
+    {
+        if (!mainMenuPanel.activeSelf)
+            return;
+
+        switch (lecteur)
+        {
+            case 1:
+                // Capteur 1 = W (monter)
+                DeplacerSelection(-1);
+                break;
+            case 3:
+                // Capteur 3 = S (descendre)
+                DeplacerSelection(1);
+                break;
+            case 2:
+            case 4:
+                // Capteur 2 ou 4 = D (valider)
+                Valider();
+                break;
+            default:
+                Debug.LogWarning("Lecteur RFID inconnu : " + lecteur);
+                break;
+        }
     }
 
     void DeplacerSelection(int direction)

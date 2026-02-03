@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
@@ -84,6 +85,16 @@ public class ClasseSelectionManager : MonoBehaviour
         }
     }
 
+    void OnEnable()
+    {
+        RFIDEventManager.OnRFIDDetected += OnRFIDDetected;
+    }
+
+    void OnDisable()
+    {
+        RFIDEventManager.OnRFIDDetected -= OnRFIDDetected;
+    }
+
     void DetecterInput()
     {
         if (classes.Count == 0)
@@ -95,6 +106,53 @@ public class ClasseSelectionManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.D)) ChoisirClasse(1, classeActuelle);
         if (Input.GetKeyDown(KeyCode.S)) ChoisirClasse(2, classeActuelle);
         if (Input.GetKeyDown(KeyCode.A)) ChoisirClasse(3, classeActuelle);
+    }
+
+    void OnRFIDDetected(int lecteur, string role)
+    {
+        if (!selectionActive || classes.Count == 0)
+            return;
+
+        int joueurIndex;
+        switch (lecteur)
+        {
+            case 1: joueurIndex = 0; break;
+            case 2: joueurIndex = 1; break;
+            case 3: joueurIndex = 2; break;
+            case 4: joueurIndex = 3; break;
+            default:
+                Debug.Log("Lecteur RFID inconnu : " + lecteur);
+                return;
+        }
+
+        ClasseData detected = null;
+
+        switch (roleKey)
+        {
+            case "voleur":
+                detected = classes.Find(c => string.Equals(c.nomClasse, "Voleur", StringComparison.OrdinalIgnoreCase));
+                break;
+            case "archer":
+                detected = classes.Find(c => string.Equals(c.nomClasse, "Archer", StringComparison.OrdinalIgnoreCase));
+                break;
+            case "tank":
+                detected = classes.Find(c => string.Equals(c.nomClasse, "Tank", StringComparison.OrdinalIgnoreCase));
+                break;
+            case "soigneur":
+                detected = classes.Find(c => string.Equals(c.nomClasse, "Soigneur", StringComparison.OrdinalIgnoreCase));
+                break;
+            default:
+                Debug.Log($"Role RFID inconnu : {role}");
+                return;
+        }
+
+        if (detected == null)
+        {
+            Debug.Log($"Classe détectée '{role}' non trouvée.");
+            return;
+        }
+
+        ChoisirClasse(joueurIndex, detected);
     }
 
     void ChoisirClasse(int joueurIndex, ClasseData classe)
