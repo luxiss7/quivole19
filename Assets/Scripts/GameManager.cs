@@ -107,7 +107,8 @@ public class GameManager : MonoBehaviour
     // Lancer de dé
     public int LancerDe()
     {
-        int resultat = Random.Range(1, 7); // 1 à 6
+        // int resultat = Random.Range(1, 7); // 1 à 6
+        int resultat = Random.Range(10, 70); // test
         Debug.Log("Dé lancé : " + resultat);
         return resultat;
     }

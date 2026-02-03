@@ -18,5 +18,5 @@ MonoBehaviour:
   distance: 5
   crochetage: 5
   sprite: {fileID: 21300000, guid: ea528088abccfab4d9d5dc91a1e49b9f, type: 3}
-  arme1: {fileID: 11400000, guid: 0db3d9e1015f5d744bb7c72c5c5ec497, type: 2}
+  arme1: {fileID: 11400000, guid: a57e3d5a68df0c141ae675909f9d649f, type: 2}
   arme2: {fileID: 0}

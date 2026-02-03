@@ -15,4 +15,4 @@ MonoBehaviour:
   nom: Gardien
   pointsDeVie: 250
   degats: 10
-  sprite: {fileID: 0}
+  sprite: {fileID: 21300000, guid: 3e5d04c318ba4af43857b140d078da28, type: 3}
