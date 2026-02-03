@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Déclenche un combat quand le joueur touche l'ennemi
@@ -26,6 +27,12 @@ public class EnemyTrigger : MonoBehaviour
         if (enemyData == null)
         {
             Debug.LogError($"[EnemyTrigger] {gameObject.name} n'a pas d'EnemyData assigné !");
+            return;
+        }
+
+        if (enemyData.nom == "Dragon" && GameState.Instance.dragonEggRecupere)
+        {
+            SceneManager.LoadScene("FriendlyCredits");
             return;
         }
 

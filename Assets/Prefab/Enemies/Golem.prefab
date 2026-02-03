@@ -92,7 +92,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4b626041c6afa14ca1314cf693391ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyData: {fileID: 0}
+  enemyData: {fileID: 11400000, guid: 9ab333084001f0544b0d2b44df24b9a3, type: 2}
 --- !u!212 &5749249435800817666
 SpriteRenderer:
   m_ObjectHideFlags: 0
