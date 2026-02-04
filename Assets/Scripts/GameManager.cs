@@ -154,7 +154,16 @@ public class GameManager : MonoBehaviour
 
         // Attendre l'événement (sans timeout, comme demandé)
         while (result == null)
+        {
+            // Permettre de forcer un roll random pour debug via la touche D pendant l'attente
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                result = LancerDe();
+                Debug.Log("RequestColorRollCoroutine: D pressé → résultat forcé = " + result);
+                break;
+            }
             yield return null;
+        }
 
         // Se désabonner puis appeler le callback
         ColorEventManager.OnColorDetected -= Handler;
