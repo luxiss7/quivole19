@@ -482,6 +482,7 @@ MonoBehaviour:
   armeRamasseeImage: {fileID: 1353628961}
   arme1Image: {fileID: 682633128}
   arme2Image: {fileID: 1637689128}
+  gameManager: {fileID: 1723001383}
 --- !u!4 &97452969
 Transform:
   m_ObjectHideFlags: 0
@@ -3671,6 +3672,7 @@ MonoBehaviour:
   - {fileID: 211322378}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   selectedColor: {r: 1, g: 0.120874554, b: 0.015686274, a: 1}
+  gameManager: {fileID: 1723001383}
 --- !u!1 &1353628959
 GameObject:
   m_ObjectHideFlags: 0

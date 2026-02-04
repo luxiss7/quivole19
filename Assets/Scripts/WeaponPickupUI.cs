@@ -18,6 +18,7 @@ public class WeaponPickupUI : MonoBehaviour
     public static event Action OnMenuFerme;
     public bool MenuEstOuvert => menuActif;
 
+    public GameManager gameManager;
 
     void Awake()
     {
