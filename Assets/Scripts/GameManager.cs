@@ -82,17 +82,42 @@ public class GameManager : MonoBehaviour
         weaponPickupAutorise = true;
 
         Player joueurActif = joueurs[tourActuel];
-        PlayerMovement pm = joueurActif.GetComponent<PlayerMovement>();
 
-        pm.deplacementsRestants = 0;
-        pm.peutBouger = false;
-        pm.peutLancerDe = false; // on bloque
+        // ✅ VÉRIFIER SI LE JOUEUR EST KO
+        if (joueurActif.estKO)
+        {
+            Debug.Log($"⏭️ {joueurActif.classeData.nomClasse} est KO - Tour sauté (1 tour uniquement)");
+            
+            // ✅ RÉACTIVER LE JOUEUR COMPLÈTEMENT après avoir sauté ce tour
+            joueurActif.estKO = false;
+            joueurActif.pointsDeVie = joueurActif.classeData.pointsDeVie; // Restaurer les HP
+            joueurActif.toursImmobilisation = 0; // ✅ Réinitialiser l'immobilisation
+            
+            PlayerMovement pm = joueurActif.GetComponent<PlayerMovement>();
+            if (pm != null)
+            {
+                pm.peutBouger = true; // Réautoriser le mouvement pour le prochain tour
+                pm.deplacementsRestants = 0; // Reset des déplacements
+            }
+            
+            Debug.Log($"✅ {joueurActif.classeData.nomClasse} se relève ! HP: {joueurActif.pointsDeVie}, Immobilisation: {joueurActif.toursImmobilisation}");
+            
+            // Passer au joueur suivant
+            StartCoroutine(SauterTourKO());
+            return;
+        }
+
+        PlayerMovement pm2 = joueurActif.GetComponent<PlayerMovement>();
+
+        pm2.deplacementsRestants = 0;
+        pm2.peutBouger = false;
+        pm2.peutLancerDe = false; // on bloque
 
         // Lancer automatiquement le dé en début de tour
         StartCoroutine(RequestColorRollCoroutine(result =>
         {
-            pm.deplacementsRestants = result;
-            pm.peutBouger = true;
+            pm2.deplacementsRestants = result;
+            pm2.peutBouger = true;
 
             // 🔥 AFFICHER LE RÉSULTAT (comme avant)
             if (DiceDisplay.Instance != null)
@@ -106,6 +131,14 @@ public class GameManager : MonoBehaviour
         MettreAJourCamera();
 
         Debug.Log("Tour du joueur : " + joueurActif.classeData.nomClasse + " - Appuyer sur D pour lancé le dé");
+    }
+
+    // ✅ Coroutine pour sauter le tour d'un joueur KO avec un petit délai
+    IEnumerator SauterTourKO()
+    {
+        yield return new WaitForSeconds(0.5f); // Petit délai pour que ce soit visible
+        TourSuivant();
+        DebutTour(); // Recommencer le début de tour avec le joueur suivant
     }
 
     public void MettreAJourCamera()
