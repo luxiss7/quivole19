@@ -337,8 +337,17 @@ public class CombatManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         
         int de = 0;
-        yield return StartCoroutine(GameManager.Instance.RequestColorRollCoroutine(r => de = r));
-        Log($"Dé lancé : {de}");
+        // If operator presses D before coroutine starts, use immediate random roll for debug
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            de = GameManager.Instance.LancerDe();
+            Log($"Dé lancé (force D) : {de}");
+        }
+        else
+        {
+            yield return StartCoroutine(GameManager.Instance.RequestColorRollCoroutine(r => de = r));
+            Log($"Dé lancé : {de}");
+        }
         
         // ✅ Afficher le dé d'attaque
         bool critique = de >= 5;
@@ -415,8 +424,16 @@ public class CombatManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         
         int de = 0;
-        yield return StartCoroutine(GameManager.Instance.RequestColorRollCoroutine(r => de = r));
-        Log($"Dé de défense : {de}");
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            de = GameManager.Instance.LancerDe();
+            Log($"Dé de défense (force D) : {de}");
+        }
+        else
+        {
+            yield return StartCoroutine(GameManager.Instance.RequestColorRollCoroutine(r => de = r));
+            Log($"Dé de défense : {de}");
+        }
         
         // ✅ Afficher le dé de défense
         bool parfait = de >= 5;
@@ -490,8 +507,16 @@ public class CombatManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         
         int de = 0;
-        yield return StartCoroutine(GameManager.Instance.RequestColorRollCoroutine(r => de = r));
-        Log($"Dé de soin : {de}");
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            de = GameManager.Instance.LancerDe();
+            Log($"Dé de soin (force D) : {de}");
+        }
+        else
+        {
+            yield return StartCoroutine(GameManager.Instance.RequestColorRollCoroutine(r => de = r));
+            Log($"Dé de soin : {de}");
+        }
         
         // ✅ Afficher le dé de soin
         bool critique = de >= 5;
@@ -591,9 +616,7 @@ public class CombatManager : MonoBehaviour
         Log($"Cible : {cible.data.classeData.nomClasse}");
         yield return new WaitForSeconds(0.5f);
         
-        int de = 0;
-        yield return StartCoroutine(GameManager.Instance.RequestColorRollCoroutine(r => de = r));
-        Log($"Dé ennemi : {de}");
+        int de = LancerDe();
         
         // ✅ Afficher le dé ennemi
         bool critique = de >= 5;
