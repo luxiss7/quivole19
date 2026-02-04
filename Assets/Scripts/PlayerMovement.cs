@@ -29,6 +29,16 @@ public class PlayerMovement : MonoBehaviour
         Debug.Log($"[PlayerMovement.Start] {name} posField={position} transform={transform.position}");
     }
 
+    void OnEnable()
+    {
+        RFIDEventManager.OnRFIDDetected += OnRFIDDetected;
+    }
+
+    void OnDisable()
+    {
+        RFIDEventManager.OnRFIDDetected -= OnRFIDDetected;
+    }
+
     // Remplace les assignments directs de transform depuis l'extérieur
     // par cet appel pour garantir cohérence champs <-> transform.
     public void SetGridPosition(Vector2Int gridPos)
@@ -58,45 +68,8 @@ public class PlayerMovement : MonoBehaviour
         // Lancer de dé manuel
         if (peutLancerDe && Input.GetKeyDown(KeyCode.D))
         {
-            // ✅ NOUVEAU : Vérifier si le joueur est immobilisé (KO)
-            Player player = GetComponent<Player>();
-            
-            if (player != null && player.toursImmobilisation > 0)
-            {
-                // ✅ Le joueur est immobilisé → Dé automatique = 0
-                deplacementsRestants = 0;
-                peutLancerDe = false;
-                
-                Debug.Log($"[PlayerMovement] {name} est immobilisé ! Dé = 0");
-                
-                // ✅ Afficher le dé KO
-                if (DiceDisplay.Instance != null)
-                {
-                    DiceDisplay.Instance.AfficherDeKO(name);
-                }
-                
-                // ✅ Décrémenter l'immobilisation
-                player.DecrementerImmobilisation();
-                
-                // ✅ Passer au tour suivant immédiatement
-                StartCoroutine(PasserTourApresKO());
-            }
-            else
-            {
-                // ✅ Joueur normal → Lancer le dé normalement
-                deplacementsRestants = gameManager.LancerDe();
-                peutLancerDe = false;
-
-                Debug.Log("Dé obtenu : " + deplacementsRestants);
-                
-                // ✅ Afficher le dé de déplacement
-                if (DiceDisplay.Instance != null)
-                {
-                    DiceDisplay.Instance.AfficherDeDeplacement(deplacementsRestants);
-                }
-
-                StartCoroutine(DelayAvantDeplacement());
-            }
+            HandleRoll();
+            return;
         }
 
         if (deplacementsRestants > 0 && peutBouger)
@@ -149,6 +122,107 @@ public class PlayerMovement : MonoBehaviour
                     inputDirection = direction;
                 }
             }
+        }
+    }
+
+    void OnRFIDDetected(int lecteur, string role)
+    {
+        // Rolling dice if allowed: readers 2 or 4
+        if (peutLancerDe && (lecteur == 2 || lecteur == 4))
+        {
+            HandleRoll();
+            return;
+        }
+
+        // Movement if have moves
+        if (deplacementsRestants > 0 && peutBouger)
+        {
+            Vector2Int direction = Vector2Int.zero;
+            switch (lecteur)
+            {
+                case 1: direction = Vector2Int.up; break;
+                case 2: direction = Vector2Int.right; break;
+                case 3: direction = Vector2Int.down; break;
+                case 4: direction = Vector2Int.left; break;
+            }
+            if (direction != Vector2Int.zero)
+                TryMove(direction);
+        }
+    }
+
+    void HandleRoll()
+    {
+        if (!peutLancerDe) return;
+        
+        Player player = GetComponent<Player>();
+            
+        if (player != null && player.toursImmobilisation > 0)
+        {
+            deplacementsRestants = 0;
+            peutLancerDe = false;
+            
+            Debug.Log($"[PlayerMovement] {name} est immobilisé ! Dé = 0");
+            
+            if (DiceDisplay.Instance != null)
+            {
+                DiceDisplay.Instance.AfficherDeKO(name);
+            }
+            
+            player.DecrementerImmobilisation();
+            StartCoroutine(PasserTourApresKO());
+        }
+        else
+        {
+            // Lancer via dé couleur (asynchrone)
+            peutLancerDe = false;
+            StartCoroutine(gameManager.RequestColorRollCoroutine(result => {
+                deplacementsRestants = result;
+
+                Debug.Log("Dé obtenu (via couleur) : " + deplacementsRestants);
+
+                if (DiceDisplay.Instance != null)
+                {
+                    DiceDisplay.Instance.AfficherDeDeplacement(deplacementsRestants);
+                }
+
+                StartCoroutine(DelayAvantDeplacement());
+            }));
+        }
+    }
+
+    void TryMove(Vector2Int direction)
+    {
+        inputDirection = direction;
+
+        Vector2Int nouvellePosition = position + direction;
+
+        DragonDoor door = GetDoor(nouvellePosition);
+        if (door != null && !door.isOpen)
+        {
+            // 🚫 porte fermée = mur logique
+            return;
+        }
+
+        Case caseCible = GetCase(nouvellePosition);
+        if (caseCible != null && caseCible.type == Case.CaseType.Mur)
+        {
+            // C'est un mur → bloqué
+            return;
+        }
+
+        position = nouvellePosition;
+        transform.position = new Vector3(position.x + 0.5f, position.y + 0.5f, 0);
+
+        deplacementsRestants--;
+
+        if (deplacementsRestants <= 0)
+        {
+            gameManager.TourSuivant();
+            gameManager.DebutTour();
+        }
+        else
+        {
+            inputDirection = direction;
         }
     }
 

@@ -17,6 +17,12 @@ public class InfoMenuUIController : MonoBehaviour
     void OnEnable()
     {
         MettreAJourSelection();
+        RFIDEventManager.OnRFIDDetected += OnRFIDDetected;
+    }
+
+    void OnDisable()
+    {
+        RFIDEventManager.OnRFIDDetected -= OnRFIDDetected;
     }
 
     void Update()
@@ -25,6 +31,16 @@ public class InfoMenuUIController : MonoBehaviour
             return;
 
         if (Input.GetKeyDown(KeyCode.D))
+            FermerInfos();
+    }
+
+    void OnRFIDDetected(int lecteur, string role)
+    {
+        if (!infoPanel.activeSelf)
+            return;
+
+        // Readers 2 or 4 act like 'D' (validate)
+        if (lecteur == 2 || lecteur == 4)
             FermerInfos();
     }
 
