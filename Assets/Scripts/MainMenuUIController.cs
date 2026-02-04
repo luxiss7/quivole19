@@ -83,7 +83,7 @@ public class MainMenuUIController : MonoBehaviour
 
     void Jouer()
     {
-        SceneManager.LoadScene("MainDonjon");
+        SceneManager.LoadScene("IntroScene");
     }
 
     void OuvrirInfos()
