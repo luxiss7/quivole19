@@ -7,6 +7,11 @@ public class RFIDClientWebGL : MonoBehaviour
     WebSocket websocket;
     public string websocketURL = "ws://127.0.0.1:8765"; // serveur Python WebSocket
 
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+
     async void Start()
     {
         Debug.Log("RFIDClient WebGL démarré");
@@ -43,7 +48,7 @@ public class RFIDClientWebGL : MonoBehaviour
                     HandleRFID(rfid);
                     break;
 
-                case "color":
+                case "couleur":  // ✅ CORRECTION ICI - était "color"
                     ColorData color = JsonUtility.FromJson<ColorData>(json);
                     HandleColor(color);
                     break;
@@ -59,9 +64,8 @@ public class RFIDClientWebGL : MonoBehaviour
 
     void Update()
     {
-        #if !UNITY_EDITOR && UNITY_WEBGL
-        // websocket?.DispatchMessageQueue();
-        #endif
+        // ✅ Pas besoin de DispatchMessageQueue dans cette version de NativeWebSocket
+        // Les callbacks OnMessage sont appelés automatiquement
     }
 
     void HandleRFID(RFIDData data)

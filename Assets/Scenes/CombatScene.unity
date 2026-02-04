@@ -152,20 +152,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9d3327cf7d743d44994aa5821115aab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  state: 0
-  joueurs: []
-  ennemi:
-    data: {fileID: 0}
-    hpActuels: 0
-    estVivant: 0
-  playerPrefab: {fileID: 2541047871497356208, guid: a6d31430e5ba908468d76479a6684e61, type: 3}
-  enemyPrefab: {fileID: 741892702921388775, guid: 31018a72b2efa4544aeed405a870c150, type: 3}
-  playerSlots:
-  - {fileID: 752088409}
-  - {fileID: 1217546161}
-  - {fileID: 1274943292}
-  - {fileID: 890218189}
-  enemySlot: {fileID: 1860019779}
+  playerCombatPositions: []
+  enemyPosition: {fileID: 0}
+  combatUI: {fileID: 0}
+  logText: {fileID: 0}
+  enemyVisualPrefab: {fileID: 0}
+  combatEnCours: 0
 --- !u!4 &203361342
 Transform:
   m_ObjectHideFlags: 0
@@ -535,6 +527,7 @@ MonoBehaviour:
   - {fileID: 1873635996}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   selectedColor: {r: 0.5283374, g: 0.86322, b: 0.9622642, a: 1}
+  gameManager: {fileID: 0}
 --- !u!4 &1105580239
 Transform:
   m_ObjectHideFlags: 0
