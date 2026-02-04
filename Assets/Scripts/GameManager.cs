@@ -15,8 +15,11 @@ public class GameManager : MonoBehaviour
 
     [Header("Dice Scan UI")]
     public GameObject diceScanUI;       // UI à activer pendant l'attente du roll couleur
+    public DiceRollingText diceRollingText;               // Texte à afficher le résultat du dé
     public Text diceScanText;           // Texte à afficher (optionnel)
     public string diceScanMessage = "Lancez le dé..."; // Message par défaut
+
+    public ClasseSelectionManager classeSelectionManager; // Référence au gestionnaire de sélection de classe
 
     void Awake()
     {
@@ -26,6 +29,13 @@ public class GameManager : MonoBehaviour
             return;
         }
         Instance = this;
+
+        if (diceScanUI != null)
+        {
+            diceScanUI.SetActive(false);
+        }
+
+        diceRollingText?.StopRolling();
     }
 
     void Start()
@@ -63,6 +73,11 @@ public class GameManager : MonoBehaviour
 
     public void DebutTour()
     {
+        if (diceScanUI != null)
+        {
+            diceScanUI.SetActive(false); // reset propre
+        }
+
         // On autorise à nouveau le pickup au debut du tour
         weaponPickupAutorise = true;
 
@@ -73,7 +88,21 @@ public class GameManager : MonoBehaviour
         pm.peutBouger = false;
         pm.peutLancerDe = false; // on bloque
 
-        StartCoroutine(DelaiAvantAutoriserLancer(pm));
+        // Lancer automatiquement le dé en début de tour
+        StartCoroutine(RequestColorRollCoroutine(result =>
+        {
+            pm.deplacementsRestants = result;
+            pm.peutBouger = true;
+
+            // 🔥 AFFICHER LE RÉSULTAT (comme avant)
+            if (DiceDisplay.Instance != null)
+            {
+                DiceDisplay.Instance.AfficherDeDeplacement(result);
+            }
+
+            Debug.Log("Résultat du dé (début de tour) : " + result);
+        }));
+
         MettreAJourCamera();
 
         Debug.Log("Tour du joueur : " + joueurActif.classeData.nomClasse + " - Appuyer sur D pour lancé le dé");
@@ -134,6 +163,8 @@ public class GameManager : MonoBehaviour
     // onResult reçoit la valeur 1..6 quand l'événement couleur est détecté.
     public IEnumerator RequestColorRollCoroutine(System.Action<int> onResult)
     {
+        Debug.Log(">>> RequestColorRollCoroutine START <<<");
+
         int? result = null;
 
         void Handler(string color, int value)
@@ -143,11 +174,22 @@ public class GameManager : MonoBehaviour
         }
 
         // Afficher l'UI d'attente si présente
-        if (diceScanUI != null)
+        if (diceScanUI != null && classeSelectionManager.selectionActive == false)
         {
             diceScanUI.SetActive(true);
+
+            // Forcer un frame pour que Unity active l'objet
+            yield return null;
+
             if (diceScanText != null)
+            {
                 diceScanText.text = diceScanMessage;
+            }
+
+            if (diceRollingText != null)
+            {
+                diceRollingText.StartRolling();
+            }
         }
 
         ColorEventManager.OnColorDetected += Handler;
@@ -168,9 +210,17 @@ public class GameManager : MonoBehaviour
         // Se désabonner puis appeler le callback
         ColorEventManager.OnColorDetected -= Handler;
 
+        // Arrêter l'animation de dé roulant et afficher le résultat final
+        if (diceRollingText != null)
+        {
+            diceRollingText.StopRolling(result.Value);
+        }
+
         // Masquer l'UI d'attente
         if (diceScanUI != null)
+        {
             diceScanUI.SetActive(false);
+        }
 
         onResult?.Invoke(result.Value);
     }

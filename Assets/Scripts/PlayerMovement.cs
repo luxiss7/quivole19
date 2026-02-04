@@ -68,46 +68,8 @@ public class PlayerMovement : MonoBehaviour
         // Lancer de dé manuel
         if (peutLancerDe && Input.GetKeyDown(KeyCode.D))
         {
-            // ✅ NOUVEAU : Vérifier si le joueur est immobilisé (KO)
-            Player player = GetComponent<Player>();
-            
-            if (player != null && player.toursImmobilisation > 0)
-            {
-                // ✅ Le joueur est immobilisé → Dé automatique = 0
-                deplacementsRestants = 0;
-                peutLancerDe = false;
-                
-                Debug.Log($"[PlayerMovement] {name} est immobilisé ! Dé = 0");
-                
-                // ✅ Afficher le dé KO
-                if (DiceDisplay.Instance != null)
-                {
-                    DiceDisplay.Instance.AfficherDeKO(name);
-                }
-                
-                // ✅ Décrémenter l'immobilisation
-                player.DecrementerImmobilisation();
-                
-                // ✅ Passer au tour suivant immédiatement
-                StartCoroutine(PasserTourApresKO());
-            }
-            else
-            {
-                // ✅ Joueur normal → Lancer le dé normalement
-                deplacementsRestants = gameManager.LancerDe();
-                // ✅ Joueur normal → Lancer le dé via dé couleur (asynchrone)
-                peutLancerDe = false;
-
-                Debug.Log("Dé obtenu : " + deplacementsRestants);
-
-                // ✅ Afficher le dé de déplacement
-                if (DiceDisplay.Instance != null)
-                {
-                    DiceDisplay.Instance.AfficherDeDeplacement(deplacementsRestants);
-                }
-
-                StartCoroutine(DelayAvantDeplacement());
-            }
+            HandleRoll();
+            return;
         }
 
         if (deplacementsRestants > 0 && peutBouger)
@@ -190,6 +152,8 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleRoll()
     {
+        if (!peutLancerDe) return;
+        
         Player player = GetComponent<Player>();
             
         if (player != null && player.toursImmobilisation > 0)

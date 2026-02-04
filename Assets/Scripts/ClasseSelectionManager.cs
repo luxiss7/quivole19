@@ -13,7 +13,7 @@ public class ClasseSelectionManager : MonoBehaviour
 
     private int indexClasse = 0;
     private float timerInactivite = 0f;
-    private bool selectionActive = true;
+    public bool selectionActive = true;
 
     [Header("UI")]
     public Image classeActuelleImage;      // Sprite en rotation au centre
