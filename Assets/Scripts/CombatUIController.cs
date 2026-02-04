@@ -19,6 +19,8 @@ public class CombatUIController : MonoBehaviour
     public Color normalColor = Color.white;
     public Color selectedColor = Color.yellow;
 
+    public GameManager gameManager;
+
     void Start()
     {
         MettreAJourSelection();
@@ -53,6 +55,15 @@ public class CombatUIController : MonoBehaviour
 
     void OnRFIDDetected(int lecteur, string role)
     {
+        // Vérifier que c'est le joueur actif
+        Player playerActif = gameManager.joueurs[gameManager.tourActuel];
+        if (playerActif != GetComponent<Player>())
+            return; // Pas le joueur actif → ignorer
+
+        // Vérifier que le rôle RFID correspond au joueur actif
+        if (role.ToLower() != playerActif.classeData.nomClasse.ToLower())
+            return; // mauvais RFID → ignorer
+
         if (combatManager == null || !combatManager.combatEnCours)
             return;
 

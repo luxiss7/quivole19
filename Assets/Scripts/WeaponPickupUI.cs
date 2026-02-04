@@ -48,6 +48,15 @@ public class WeaponPickupUI : MonoBehaviour
 
     void OnRFIDDetected(int lecteur, string role)
     {
+        // Vérifier que c'est le joueur actif
+        Player playerActif = gameManager.joueurs[gameManager.tourActuel];
+        if (playerActif != GetComponent<Player>())
+            return; // Pas le joueur actif → ignorer
+
+        // Vérifier que le rôle RFID correspond au joueur actif
+        if (role.ToLower() != playerActif.classeData.nomClasse.ToLower())
+            return; // mauvais RFID → ignorer
+
         if (!menuActif) return;
 
         switch (lecteur)

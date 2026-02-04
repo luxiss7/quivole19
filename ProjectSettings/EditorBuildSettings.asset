@@ -21,6 +21,9 @@ EditorBuildSettings:
     path: Assets/Scenes/KillerCredits.unity
     guid: 89ac2f482ba3f824b95cf916655c9dd9
   - enabled: 1
+    path: Assets/Scenes/FriendlyCredits.unity
+    guid: a9aa27cb698912b40b8317055d40d695
+  - enabled: 1
     path: Assets/Scenes/GameOver.unity
-    guid: 381a03edb8eb1cb4e91138f1e05decee
+    guid: 5b3a8b067317b9640a95ac76cd28f763
   m_configObjects: {}

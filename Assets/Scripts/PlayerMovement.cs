@@ -127,6 +127,15 @@ public class PlayerMovement : MonoBehaviour
 
     void OnRFIDDetected(int lecteur, string role)
     {
+        // Vérifier que c'est le joueur actif
+        Player playerActif = gameManager.joueurs[gameManager.tourActuel];
+        if (playerActif != GetComponent<Player>())
+            return; // Pas le joueur actif → ignorer
+
+        // Vérifier que le rôle RFID correspond au joueur actif
+        if (role.ToLower() != playerActif.classeData.nomClasse.ToLower())
+            return; // mauvais RFID → ignorer
+
         // Rolling dice if allowed: readers 2 or 4
         if (peutLancerDe && (lecteur == 2 || lecteur == 4))
         {
