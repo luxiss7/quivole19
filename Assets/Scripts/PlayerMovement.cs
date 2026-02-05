@@ -136,6 +136,13 @@ public class PlayerMovement : MonoBehaviour
         if (role.ToLower() != playerActif.classeData.nomClasse.ToLower())
             return; // mauvais RFID → ignorer
 
+        // Seulement si le menu de ramassage d'arme n'est pas ouvert
+        if (WeaponPickupUI.Instance != null && WeaponPickupUI.Instance.MenuEstOuvert)
+        return;
+
+        if (CombatManager.Instance.combatEnCours == true)
+        return;
+
         // Rolling dice if allowed: readers 2 or 4
         if (peutLancerDe && (lecteur == 2 || lecteur == 4))
         {

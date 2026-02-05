@@ -21,6 +21,17 @@ public class IntroUIController : MonoBehaviour
     public Color normalColor = Color.white;
     public Color selectedColor = Color.cyan;
 
+    void OnEnable()
+    {
+        MettreAJourSelection();
+        RFIDEventManager.OnRFIDDetected += OnRFIDDetected;
+    }
+
+    void OnDisable()
+    {
+        RFIDEventManager.OnRFIDDetected -= OnRFIDDetected;
+    }
+
     void Start()
     {
         AfficherPage(indexPage);
@@ -37,6 +48,29 @@ public class IntroUIController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.D))
             Valider();
+    }
+
+    void OnRFIDDetected(int lecteur, string role)
+    {
+        switch (lecteur)
+        {
+            case 1:
+                // Capteur 1 = W (monter)
+                DeplacerSelection(-1);
+                break;
+            case 3:
+                // Capteur 3 = S (descendre)
+                DeplacerSelection(1);
+                break;
+            case 2:
+            case 4:
+                // Capteur 2 ou 4 = D (valider)
+                Valider();
+                break;
+            default:
+                Debug.LogWarning("Lecteur RFID inconnu : " + lecteur);
+                break;
+        }
     }
 
     // --------------------
