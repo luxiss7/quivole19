@@ -48,7 +48,7 @@ public class RFIDClientWebGL : MonoBehaviour
                     HandleRFID(rfid);
                     break;
 
-                case "couleur":  // ✅ CORRECTION ICI - était "color"
+                case "couleur":
                     ColorData color = JsonUtility.FromJson<ColorData>(json);
                     HandleColor(color);
                     break;
