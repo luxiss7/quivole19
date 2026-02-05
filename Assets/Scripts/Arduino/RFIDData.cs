@@ -7,6 +7,7 @@ public class SensorMessage
 [System.Serializable]
 public class RFIDData
 {
+    public string capteur;
     public int lecteur;
     public string role;
 }
@@ -14,6 +15,7 @@ public class RFIDData
 [System.Serializable]
 public class ColorData
 {
+    public string capteur;
     public string color;
     public int value;
 }
