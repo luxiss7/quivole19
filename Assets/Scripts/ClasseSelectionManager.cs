@@ -18,6 +18,7 @@ public class ClasseSelectionManager : MonoBehaviour
     [Header("UI")]
     public Image classeActuelleImage;      // Sprite en rotation au centre
     public Image[] portraitsJoueurs;       // 4 images pour Joueur 1 à 4
+    bool classeEnCoursDeRetrait = false;
 
     void Start()
     {
@@ -47,7 +48,13 @@ public class ClasseSelectionManager : MonoBehaviour
     {
         while (selectionActive)
         {
-            // ÉVITE LE CRASH : si aucune classe restante → fin sélection
+            // ⏸️ Pause pendant une suppression de classe
+            if (classeEnCoursDeRetrait)
+            {
+                yield return null;
+                continue;
+            }
+
             if (classes.Count == 0)
             {
                 Debug.Log("Plus aucune classe disponible !");
@@ -62,7 +69,15 @@ public class ClasseSelectionManager : MonoBehaviour
 
             yield return new WaitForSeconds(tempsAffichage);
 
-            indexClasse = (indexClasse + 1) % classes.Count;
+            // 🔒 Protection anti modulo par zéro (LA PLUS IMPORTANTE)
+            if (classes.Count > 0)
+            {
+                indexClasse = (indexClasse + 1) % classes.Count;
+            }
+            else
+            {
+                yield break;
+            }
         }
     }
 
@@ -207,19 +222,13 @@ public class ClasseSelectionManager : MonoBehaviour
 
     IEnumerator RetirerClasseAvecDelai(ClasseData classe)
     {
-        yield return null; // Attend la prochaine frame
-        
+        classeEnCoursDeRetrait = true;
+        yield return null;
+
         if (classes.Contains(classe))
-        {
             classes.Remove(classe);
-            Debug.Log($"Classe {classe.nomClasse} retirée de la liste");
-            
-            // Réajuster l'index si nécessaire
-            if (indexClasse >= classes.Count && classes.Count > 0)
-            {
-                indexClasse = 0;
-            }
-        }
+
+        classeEnCoursDeRetrait = false;
     }
 
     int NombreJoueursChoisis()
