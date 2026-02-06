@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 
 /// <summary>
-/// ContrÃ´le les boutons d'action du combat avec les touches Z/S/D
+/// Contrôle les boutons d'action du combat avec les touches Z/S/D
 /// VERSION COMPATIBLE avec CombatManager_SIMPLE
 /// </summary>
 public class CombatUIController : MonoBehaviour
@@ -55,17 +55,14 @@ public class CombatUIController : MonoBehaviour
 
     void OnRFIDDetected(int lecteur, string role)
     {
-        // Vérifier que c'est le joueur actif
-        Player playerActif = gameManager.joueurs[gameManager.tourActuel];
-        if (playerActif != GetComponent<Player>())
-            return; // Pas le joueur actif → ignorer
-
-        // Vérifier que le rôle RFID correspond au joueur actif
-        if (role.ToLower() != playerActif.classeData.nomClasse.ToLower())
-            return; // mauvais RFID → ignorer
-
         if (combatManager == null || !combatManager.combatEnCours)
             return;
+
+        Player playerActif = gameManager.joueurs[gameManager.tourActuel];
+        if (role.ToLower() != playerActif.classeData.nomClasse.ToLower())
+        {
+            return;
+        }
 
         switch (lecteur)
         {
@@ -111,7 +108,7 @@ public class CombatUIController : MonoBehaviour
     }
 
     void Valider()
-    {
+    {        
         switch (indexSelection)
         {
             case 0:

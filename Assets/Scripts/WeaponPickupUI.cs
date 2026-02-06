@@ -49,16 +49,18 @@ public class WeaponPickupUI : MonoBehaviour
 
     void OnRFIDDetected(int lecteur, string role)
     {
-        // Vérifier que c'est le joueur actif
-        Player playerActif = gameManager.joueurs[gameManager.tourActuel];
-        if (playerActif != GetComponent<Player>())
-            return; // Pas le joueur actif → ignorer
-
-        // Vérifier que le rôle RFID correspond au joueur actif
-        if (role.ToLower() != playerActif.classeData.nomClasse.ToLower())
-            return; // mauvais RFID → ignorer
-
         if (!menuActif) return;
+
+        if (player == null)
+        {
+            Debug.LogWarning("WeaponPickupUI: player est null!");
+            return;
+        }
+
+        if (role.ToLower() != player.classeData.nomClasse.ToLower())
+        {
+            return; // Mauvais RFID → ignorer
+        }
 
         switch (lecteur)
         {
@@ -103,9 +105,20 @@ public class WeaponPickupUI : MonoBehaviour
         arme2Image.enabled = player.arme2 != null;
     }
 
-    void ChoisirSlot1() => Echanger(ref player.arme1);
-    void ChoisirSlot2() => Echanger(ref player.arme2);
-    void Refuser() => FermerMenu();
+    void ChoisirSlot1()
+    {
+        Echanger(ref player.arme1);
+    }
+
+    void ChoisirSlot2()
+    {
+        Echanger(ref player.arme2);
+    }
+
+    void Refuser()
+    {
+        FermerMenu();
+    }
 
     void Echanger(ref WeaponData slot)
     {

@@ -37,7 +37,6 @@ public class ClasseSelectionManager : MonoBehaviour
         // Si 2 joueurs ou + ont choisi ET 30 sec d'inactivité → Lancer partie
         if (NombreJoueursChoisis() >= 2 && timerInactivite >= 30f)
         {
-            Debug.Log("AUTO-LAUNCH : Personne n’a choisi depuis 30 sec. Début de la partie !");
             LancerPartie();
         }
 
@@ -109,9 +108,16 @@ public class ClasseSelectionManager : MonoBehaviour
     }
 
     void OnRFIDDetected(int lecteur, string role)
-    {
-        if (!selectionActive || classes.Count == 0)
+    {        
+        if (!selectionActive)
+        {
             return;
+        }
+        
+        if (classes.Count == 0)
+        {
+            return;
+        }
 
         int joueurIndex;
         switch (lecteur)
@@ -185,21 +191,34 @@ public class ClasseSelectionManager : MonoBehaviour
         Debug.Log($"Joueur {joueurIndex + 1} a choisi {classe.nomClasse}");
 
         // 🔥🔥🔥 UI : mettre le sprite dans la carte
-        if (portraitsJoueurs[joueurIndex] != null)
-            portraitsJoueurs[joueurIndex].sprite = classe.sprite;
-
-        // Retirer la classe disponible
-        if (classes.Count > 1)
+        if (portraitsJoueurs != null && joueurIndex < portraitsJoueurs.Length && portraitsJoueurs[joueurIndex] != null)
         {
-            classes.Remove(classe);
+            portraitsJoueurs[joueurIndex].sprite = classe.sprite;
         }
 
-        indexClasse = 0;
+        StartCoroutine(RetirerClasseAvecDelai(classe));
 
         if (NombreJoueursChoisis() == joueurs.Length)
         {
             Debug.Log("Tous les joueurs ont choisi !");
             LancerPartie();
+        }
+    }
+
+    IEnumerator RetirerClasseAvecDelai(ClasseData classe)
+    {
+        yield return null; // Attend la prochaine frame
+        
+        if (classes.Contains(classe))
+        {
+            classes.Remove(classe);
+            Debug.Log($"Classe {classe.nomClasse} retirée de la liste");
+            
+            // Réajuster l'index si nécessaire
+            if (indexClasse >= classes.Count && classes.Count > 0)
+            {
+                indexClasse = 0;
+            }
         }
     }
 
@@ -244,7 +263,7 @@ public class ClasseSelectionManager : MonoBehaviour
             gameManager.DebutTour();
 
             if (gameManager.classChoiceUI != null)
-            gameManager.classChoiceUI.SetActive(false);
+                gameManager.classChoiceUI.SetActive(false);
         }
         else
         {
